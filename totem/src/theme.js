@@ -1,0 +1,65 @@
+export const C = {
+  bg:        '#050a18',
+  bgGrad:    'radial-gradient(ellipse 80% 60% at 50% 20%, #0e1a3d 0%, #050a18 60%, #02050d 100%)',
+  blue:      '#5BC5F5',
+  blueDark:  '#1E7CD8',
+  cyan:      '#7FD4FF',
+  card:      'rgba(94,197,245,0.06)',
+  cardBd:    'rgba(94,197,245,0.2)',
+  cardBd2:   'rgba(94,197,245,0.4)',
+  cardHov:   'rgba(94,197,245,0.12)',
+  dim:       'rgba(181,212,244,0.7)',
+  fade:      'rgba(181,212,244,0.45)',
+  green:     '#5DCAA5',
+  gold:      '#FFC957',
+  red:       '#F09595',
+  gradBlue:  'linear-gradient(135deg,#5BC5F5 0%,#1E7CD8 100%)',
+  gradText:  'linear-gradient(135deg,#7FD4FF 0%,#2E8FE0 100%)',
+};
+
+// Estilos reutilizáveis
+export const S = {
+  screen: {
+    position: 'absolute', inset: 0,
+    background: C.bgGrad,
+    display: 'flex', flexDirection: 'column',
+    padding: '24px 20px',
+  },
+  card: {
+    background: C.card,
+    border: `1px solid ${C.cardBd}`,
+    borderRadius: 12,
+    padding: '12px 14px',
+  },
+  btnPrimary: {
+    background: C.gradBlue,
+    color: '#fff',
+    border: 'none',
+    borderRadius: 16,
+    padding: '16px 24px',
+    fontSize: 16,
+    fontWeight: 600,
+    cursor: 'pointer',
+    width: '100%',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+  },
+  btnGhost: {
+    background: 'transparent',
+    color: C.cyan,
+    border: `1px solid ${C.cardBd2}`,
+    borderRadius: 12,
+    padding: '12px 20px',
+    fontSize: 14,
+    cursor: 'pointer',
+    width: '100%',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+  },
+  back: {
+    display: 'flex', alignItems: 'center', gap: 6,
+    color: C.fade, fontSize: 13, cursor: 'pointer',
+    background: 'none', border: 'none',
+  },
+  stepLabel: {
+    fontSize: 10, color: C.fade, letterSpacing: '1.5px',
+  },
+};
