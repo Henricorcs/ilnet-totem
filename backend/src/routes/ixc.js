@@ -19,19 +19,12 @@ router.get('/health', async (_req, res) => {
       return res.status(500).json({ status: 'error', ixc: 'missing_config' });
     }
 
-    const qs = new URLSearchParams({
-      qtype: 'cliente.id',
-      query: '1',
-      oper: '>=',
-      page: '1',
-      rp: '1',
-      sortname: 'cliente.id',
-      sortorder: 'asc',
-    });
+    const url =
+      `${BASE()}/webservice/v1/cliente` +
+      `?qtype=cliente.cnpj_cpf&query=00000000000&oper==&page=1&rp=1` +
+      `&sortname=cliente.id&sortorder=asc`;
 
-    const r = await fetch(`${BASE()}/webservice/v1/cliente?${qs.toString()}`, {
-      headers: hdr({ ixcsoft: 'listar' }),
-    });
+    const r = await fetch(url, { headers: hdr({ ixcsoft: 'listar' }) });
     const text = await r.text();
 
     let data;
