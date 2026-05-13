@@ -1,4 +1,10 @@
-const BASE = () => window.__API_URL__ || 'http://localhost:3001';
+const defaultBase = () => {
+  const host = window.location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:3001';
+  return 'https://api.totem.ilnet.com.br';
+};
+
+const BASE = () => window.__API_URL__ || defaultBase();
 
 const json = async (url, opts = {}) => {
   const r = await fetch(BASE() + url, {

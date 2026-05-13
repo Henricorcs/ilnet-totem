@@ -12,6 +12,52 @@ const hdr = (extra = {}) => ({
   ...extra,
 });
 
+// Verifica se o backend consegue autenticar e listar dados no IXC.
+router.get('/health', async (_req, res) => {
+  try {
+    if (!BASE() || !process.env.IXC_USER || !process.env.IXC_PASS) {
+      return res.status(500).json({ status: 'error', ixc: 'missing_config' });
+    }
+
+    const qs = new URLSearchParams({
+      qtype: 'cliente.id',
+      query: '1',
+      oper: '>=',
+      page: '1',
+      rp: '1',
+      sortname: 'cliente.id',
+      sortorder: 'asc',
+    });
+
+    const r = await fetch(`${BASE()}/webservice/v1/cliente?${qs.toString()}`, {
+      headers: hdr({ ixcsoft: 'listar' }),
+    });
+    const text = await r.text();
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      return res.status(502).json({ status: 'error', ixc: 'invalid_response' });
+    }
+
+    const validList = data && (Array.isArray(data.registros) || data.total !== undefined);
+    if (!r.ok || !validList) {
+      return res.status(502).json({
+        status: 'error',
+        ixc: 'error',
+        http_status: r.status,
+        message: data?.message || data?.error || 'Resposta inesperada do IXC',
+      });
+    }
+
+    res.json({ status: 'ok', ixc: 'ok' });
+  } catch (err) {
+    console.error('IXC /health', err.message);
+    res.status(502).json({ status: 'error', ixc: 'unreachable' });
+  }
+});
+
 // Busca cliente por CPF
 router.post('/client', async (req, res) => {
   try {

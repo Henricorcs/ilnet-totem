@@ -63,16 +63,27 @@ async function init() {
   await pool.query(SCHEMA);
 
   // Usuário admin padrão
+  const adminPassword = process.env.ADMIN_PASSWORD || 'ilnet@2026';
   const { rows } = await pool.query(
-    'SELECT id FROM admin_users WHERE username = $1', ['admin']
+    'SELECT id, password_hash FROM admin_users WHERE username = $1', ['admin']
   );
   if (rows.length === 0) {
-    const hash = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'ilnet@2026', 10);
+    const hash = await bcrypt.hash(adminPassword, 10);
     await pool.query(
       'INSERT INTO admin_users (username, password_hash) VALUES ($1, $2)',
       ['admin', hash]
     );
-    console.log('Admin criado: admin / ' + (process.env.ADMIN_PASSWORD || 'ilnet@2026'));
+    console.log('Admin criado: admin');
+  } else {
+    const matchesEnvPassword = await bcrypt.compare(adminPassword, rows[0].password_hash);
+    if (!matchesEnvPassword) {
+      const hash = await bcrypt.hash(adminPassword, 10);
+      await pool.query(
+        'UPDATE admin_users SET password_hash = $1 WHERE username = $2',
+        [hash, 'admin']
+      );
+      console.log('Senha do admin sincronizada com ADMIN_PASSWORD');
+    }
   }
 
   // Configurações padrão

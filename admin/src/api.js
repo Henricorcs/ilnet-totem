@@ -1,4 +1,10 @@
-const BASE = () => window.__API_URL__ || 'http://localhost:3001';
+const defaultBase = () => {
+  const host = window.location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:3001';
+  return 'https://api.totem.ilnet.com.br';
+};
+
+const BASE = () => window.__API_URL__ || defaultBase();
 const token = () => localStorage.getItem('ilnet_admin_token');
 
 const req = async (url, opts = {}) => {
@@ -11,6 +17,11 @@ const req = async (url, opts = {}) => {
     ...opts,
   });
   if (r.status === 401) {
+    const err = await r.json().catch(() => ({ error: 'Credenciais inválidas' }));
+    if (url === '/api/admin/login') {
+      throw new Error(err.error || 'Credenciais inválidas');
+    }
+
     localStorage.removeItem('ilnet_admin_token');
     window.location.href = '/login';
     throw new Error('Sessão expirada');

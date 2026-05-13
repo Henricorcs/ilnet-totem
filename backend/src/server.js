@@ -18,7 +18,15 @@ app.use('/api/participants',  require('./routes/participants'));
 app.use('/api/admin',        require('./routes/admin'));
 app.use('/api/settings',     require('./routes/settings'));
 
-app.get('/health', (_req, res) => res.json({ ok: true, ts: Date.now() }));
+app.get('/health', async (_req, res) => {
+  try {
+    await db.query('SELECT 1');
+    res.json({ status: 'ok', db: 'ok' });
+  } catch (err) {
+    console.error('Health check failed:', err.message);
+    res.status(503).json({ status: 'error', db: 'error' });
+  }
+});
 
 db.init().then(() => {
   app.listen(PORT, '0.0.0.0', () => {

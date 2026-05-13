@@ -23,8 +23,9 @@ export default function Settings() {
   const testIxc = async () => {
     setIxcOk(null);
     try {
-      const r = await fetch((window.__API_URL__||'http://localhost:3001') + '/health');
-      setIxcOk(r.ok);
+      const r = await fetch((window.__API_URL__||'http://localhost:3001') + '/api/ixc/health');
+      const data = await r.json().catch(() => ({}));
+      setIxcOk(r.ok && data.ixc === 'ok');
     } catch { setIxcOk(false); }
   };
 
