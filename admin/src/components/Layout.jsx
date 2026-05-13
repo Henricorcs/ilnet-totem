@@ -18,22 +18,16 @@ const NAV = [
   { to:'/settings',     icon:'ti-settings',       label:'Ajustes'   },
 ];
 
+const LOGO_SRC = '/assets/ilnet-logo-real.png';
+
 function Logo() {
   return (
     <div style={{ padding:'12px 8px 8px', textAlign:'center' }}>
-      <svg width="40" height="14" viewBox="0 0 130 38" aria-hidden="true">
-        <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0"   stopColor="#7FD4FF"/>
-          <stop offset="100%" stopColor="#1E7CD8"/>
-        </linearGradient></defs>
-        <circle cx="14" cy="24" r="9"  fill="url(#lg)"/>
-        <path d="M14 24Q32 4 50 20"   stroke="url(#lg)" strokeWidth="7" fill="none" strokeLinecap="round"/>
-        <circle cx="50" cy="20" r="6"  fill="url(#lg)"/>
-        <path d="M50 20Q65 32 80 20"  stroke="url(#lg)" strokeWidth="7" fill="none" strokeLinecap="round"/>
-        <circle cx="80" cy="20" r="6"  fill="url(#lg)"/>
-        <path d="M80 20Q98 4 116 24"  stroke="url(#lg)" strokeWidth="7" fill="none" strokeLinecap="round"/>
-        <circle cx="116" cy="24" r="9" fill="url(#lg)"/>
-      </svg>
+      <img
+        src={LOGO_SRC}
+        alt="ILNET"
+        style={{ width:42, height:24, objectFit:'contain', display:'block', margin:'0 auto' }}
+      />
     </div>
   );
 }

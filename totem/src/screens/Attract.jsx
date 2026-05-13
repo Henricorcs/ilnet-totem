@@ -1,36 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { C } from '../theme.js';
 
-// Logo SVG da ILNET (recriação do padrão)
-function IlnetLogo({ size = 120 }) {
-  return (
-    <div style={{ textAlign: 'center' }}>
-      <svg width={size} height={Math.round(size * 0.35)} viewBox="0 0 130 38" aria-hidden="true">
-        <defs>
-          <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0"   stopColor="#7FD4FF"/>
-            <stop offset="100%" stopColor="#1E7CD8"/>
-          </linearGradient>
-        </defs>
-        <circle cx="14" cy="24" r="9"  fill="url(#lg)"/>
-        <path d="M14 24Q32 4 50 20"   stroke="url(#lg)" strokeWidth="7" fill="none" strokeLinecap="round"/>
-        <circle cx="50" cy="20" r="6"  fill="url(#lg)"/>
-        <path d="M50 20Q65 32 80 20"  stroke="url(#lg)" strokeWidth="7" fill="none" strokeLinecap="round"/>
-        <circle cx="80" cy="20" r="6"  fill="url(#lg)"/>
-        <path d="M80 20Q98 4 116 24"  stroke="url(#lg)" strokeWidth="7" fill="none" strokeLinecap="round"/>
-        <circle cx="116" cy="24" r="9" fill="url(#lg)"/>
-      </svg>
-      <div style={{
-        fontSize: 72, fontWeight: 800, letterSpacing: -4, lineHeight: 1,
-        background: C.gradText,
-        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-        backgroundClip: 'text',
-        fontFamily: 'system-ui,-apple-system,sans-serif',
-        marginTop: 4,
-      }}>ilnet</div>
-    </div>
-  );
-}
+const LOGO_SRC = '/assets/ilnet-logo-real.png';
 
 // Partículas SVG animadas (fundo)
 function Particles() {
@@ -99,7 +70,17 @@ export default function Attract({ go, event }) {
 
       {/* Logo + evento */}
       <div style={{ textAlign:'center',zIndex:2,flex:1,display:'flex',flexDirection:'column',justifyContent:'center',gap:24 }}>
-        <IlnetLogo size={140}/>
+        <img
+          src={LOGO_SRC}
+          alt="ILNET"
+          style={{
+            width:'min(74vw, 420px)',
+            height:'auto',
+            display:'block',
+            margin:'0 auto',
+            objectFit:'contain',
+          }}
+        />
 
         {event && (
           <div style={{ marginTop:8 }}>
