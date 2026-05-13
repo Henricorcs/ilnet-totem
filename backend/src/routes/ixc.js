@@ -16,7 +16,7 @@ const hdr = (extra = {}) => ({
 router.get('/health', async (_req, res) => {
   try {
     if (!BASE() || !process.env.IXC_USER || !process.env.IXC_PASS) {
-      return res.status(500).json({ status: 'error', ixc: 'missing_config' });
+      return res.json({ status: 'error', ixc: 'missing_config' });
     }
 
     const url =
@@ -31,12 +31,12 @@ router.get('/health', async (_req, res) => {
     try {
       data = JSON.parse(text);
     } catch {
-      return res.status(502).json({ status: 'error', ixc: 'invalid_response' });
+      return res.json({ status: 'error', ixc: 'invalid_response' });
     }
 
     const validList = data && (Array.isArray(data.registros) || data.total !== undefined);
     if (!r.ok || !validList) {
-      return res.status(502).json({
+      return res.json({
         status: 'error',
         ixc: 'error',
         http_status: r.status,
@@ -47,7 +47,7 @@ router.get('/health', async (_req, res) => {
     res.json({ status: 'ok', ixc: 'ok' });
   } catch (err) {
     console.error('IXC /health', err.message);
-    res.status(502).json({ status: 'error', ixc: 'unreachable' });
+    res.json({ status: 'error', ixc: 'unreachable' });
   }
 });
 
