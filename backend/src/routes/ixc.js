@@ -13,6 +13,12 @@ const hdr = (extra = {}) => ({
 });
 const listHdr = () => hdr({ ixcsoft: 'listar' });
 
+function formatCPFForIXC(cpf) {
+  const digits = (cpf || '').replace(/\D/g, '');
+  if (digits.length !== 11) return digits;
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+}
+
 async function parseIXCResponse(response, context) {
   const text = await response.text();
   let data;
@@ -80,7 +86,7 @@ router.post('/client', async (req, res) => {
 
     const data = await listIXC('cliente', {
       qtype: 'cliente.cnpj_cpf',
-      query: cpf,
+      query: formatCPFForIXC(cpf),
       rp: '10',
       sortname: 'cliente.id',
     });
