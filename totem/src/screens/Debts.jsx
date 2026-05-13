@@ -1,4 +1,5 @@
 import { C, S } from '../theme.js';
+import { ClientIdentity } from '../components/ClientIdentity.jsx';
 
 function fmt(val) {
   return Number(val).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
@@ -12,7 +13,9 @@ function fmtDate(d) {
 export default function Debts({ session, go }) {
   const { debts = [], clientName } = session;
   const hasDebts = debts.length > 0;
-  const firstName = clientName?.split(' ')[0] || 'Cliente';
+  const overdueCount = debts.filter(d => new Date(d.due_date) < new Date()).length;
+  const totalOpen = debts.reduce((sum, d) => sum + (Number(d.value) || 0), 0);
+  const debtLabel = `${debts.length} fatura${debts.length > 1 ? 's' : ''}`;
 
   return (
     <div style={S.screen}>
@@ -21,20 +24,28 @@ export default function Debts({ session, go }) {
         <span style={S.stepLabel}>PASSO 3 DE 4</span>
       </div>
 
-      <div style={{ marginTop:20, marginBottom:16 }}>
-        <h2 style={{ fontSize:20,fontWeight:500 }}>Olá, {firstName}!</h2>
-        {hasDebts ? (
-          <p style={{ fontSize:13,color:C.dim,marginTop:6,lineHeight:1.4 }}>
-            Encontramos {debts.length} fatura{debts.length>1?'s':''} em aberto.<br/>
-            Pague pra liberar sua chance na roleta!
-          </p>
-        ) : (
-          <p style={{ fontSize:13,color:C.dim,marginTop:6 }}>Sua conta está em dia 🎉</p>
-        )}
-      </div>
+      <ClientIdentity
+        clientName={clientName}
+        description={hasDebts
+          ? 'Encontramos pendências neste contrato. Regularize para liberar sua chance na roleta.'
+          : 'Sua conta está em dia. Sua chance na roleta está liberada.'}
+        metaItems={hasDebts
+          ? [
+              {
+                icon: overdueCount > 0 ? 'ti-alert-triangle' : 'ti-file-invoice',
+                label: overdueCount > 0 ? `${overdueCount} vencida${overdueCount > 1 ? 's' : ''}` : `${debtLabel} em aberto`,
+                tone: overdueCount > 0 ? 'danger' : 'warning',
+              },
+              { icon:'ti-cash', label:fmt(totalOpen), tone:'info' },
+            ]
+          : [{ icon:'ti-circle-check', label:'Conta em dia', tone:'success' }]}
+      />
 
       {hasDebts && (
-        <div style={{ display:'flex',flexDirection:'column',gap:10,marginBottom:16 }}>
+        <div style={{
+          display:'flex',flexDirection:'column',gap:10,marginBottom:16,
+          flex:'1 1 auto',minHeight:0,overflowY:'auto',paddingRight:2,
+        }}>
           {debts.map(d => {
             const overdue = new Date(d.due_date) < new Date();
             return (
@@ -60,7 +71,7 @@ export default function Debts({ session, go }) {
         </div>
       )}
 
-      <div style={{ marginTop:'auto',display:'flex',flexDirection:'column',gap:10 }}>
+      <div style={{ marginTop:hasDebts ? 0 : 'auto',display:'flex',flexDirection:'column',gap:10 }}>
         {hasDebts ? (
           <>
             <button

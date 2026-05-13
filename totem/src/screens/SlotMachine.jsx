@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { api } from '../api.js';
 import { C, S } from '../theme.js';
+import { ClientPill } from '../components/ClientIdentity.jsx';
 
 const API_URL = () => window.__API_URL__ || 'http://localhost:3001';
 const SH = 130; // altura por símbolo em px
@@ -117,16 +118,23 @@ export default function SlotMachine({ session, go, prizes }) {
   return (
     <div style={S.screen}>
       {/* Header */}
-      <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center' }}>
-        <div style={{ display:'flex',alignItems:'center',gap:8,fontSize:12,color:C.dim }}>
-          {name && <><i className="ti ti-user" style={{fontSize:13}} aria-hidden="true"/>{name}</>}
-        </div>
-        <div style={{ display:'flex',alignItems:'center',gap:6,fontSize:12,color:C.gold }}>
+      <div style={{ display:'flex',justifyContent:'flex-end',alignItems:'center' }}>
+        <div style={{
+          display:'flex',alignItems:'center',gap:6,fontSize:12,color:C.gold,
+          padding:'6px 10px',borderRadius:999,
+          background:'rgba(255,201,87,0.10)',
+          border:'1px solid rgba(255,201,87,0.25)',
+        }}>
           <i className="ti ti-ticket" style={{fontSize:13}} aria-hidden="true"/>1 chance
         </div>
       </div>
 
-      <div style={{ textAlign:'center',marginTop:16 }}>
+      <div style={{ textAlign:'center',marginTop:10 }}>
+        {name && (
+          <div style={{ display:'flex',justifyContent:'center',marginBottom:12 }}>
+            <ClientPill clientName={clientName} label="Cliente identificado" />
+          </div>
+        )}
         <div style={S.stepLabel}>PASSO 4 DE 4</div>
         <h1 style={{ fontSize:24,fontWeight:500,marginTop:6 }}>Boa sorte!</h1>
         <p style={{ fontSize:12,color:C.dim,marginTop:4 }}>3 iguais = você ganha</p>
