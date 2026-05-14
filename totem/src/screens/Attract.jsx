@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { C } from '../theme.js';
 
-const LOGO_SRC = '/assets/ilnet-logo-real.png';
+const LOGO_SRC = '/assets/ilnet-logo-clean.svg';
 
 // Partículas SVG animadas (fundo)
 function Particles() {
@@ -74,11 +74,12 @@ export default function Attract({ go, event }) {
           src={LOGO_SRC}
           alt="ILNET"
           style={{
-            width:'min(74vw, 420px)',
+            width:'min(58vw, 360px)',
             height:'auto',
             display:'block',
             margin:'0 auto',
             objectFit:'contain',
+            filter:'drop-shadow(0 0 18px rgba(91,197,245,0.22))',
           }}
         />
 

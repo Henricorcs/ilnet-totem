@@ -18,7 +18,7 @@ const NAV = [
   { to:'/settings',     icon:'ti-settings',       label:'Ajustes'   },
 ];
 
-const LOGO_SRC = '/assets/ilnet-logo-real.png';
+const LOGO_SRC = '/assets/ilnet-logo-clean.svg';
 
 function Logo() {
   return (
@@ -26,7 +26,7 @@ function Logo() {
       <img
         src={LOGO_SRC}
         alt="ILNET"
-        style={{ width:42, height:24, objectFit:'contain', display:'block', margin:'0 auto' }}
+        style={{ width:46, height:26, objectFit:'contain', display:'block', margin:'0 auto' }}
       />
     </div>
   );
