@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react';
 import { C } from '../theme.js';
 
 const LOGO_SRC = '/assets/ilnet-logo-clean.svg';
@@ -32,13 +31,6 @@ function Particles() {
 }
 
 export default function Attract({ go, event }) {
-  const videoRef = useRef(null);
-
-  useEffect(() => {
-    // Tenta reproduzir o vídeo (muted = permite autoplay)
-    videoRef.current?.play().catch(() => {});
-  }, []);
-
   return (
     <div style={{
       position:'absolute',inset:0,
@@ -48,18 +40,6 @@ export default function Attract({ go, event }) {
       padding:'32px 28px',
       cursor:'pointer',
     }} onClick={() => go('entry')}>
-
-      {/* Vídeo de fundo (fica atrás de tudo) */}
-      <video
-        ref={videoRef}
-        src="/assets/video.mp4"
-        autoPlay loop muted playsInline
-        style={{
-          position:'absolute',inset:0,width:'100%',height:'100%',
-          objectFit:'cover',opacity:0.12,zIndex:0,
-        }}
-      />
-
       <Particles/>
 
       {/* Status totem — discreto */}

@@ -6,7 +6,32 @@ const defaultBase = () => {
 
 const BASE = () => window.__API_URL__ || defaultBase();
 
+const hasNativeBridge = () => Boolean(window.IlNetBridge?.request);
+
+const parsePayload = (payload) => {
+  if (!payload) return {};
+  try { return JSON.parse(payload); }
+  catch { return { error: payload }; }
+};
+
 const json = async (url, opts = {}) => {
+  if (hasNativeBridge()) {
+    const method = opts.method || 'GET';
+    const body = opts.body || '';
+    const raw = window.IlNetBridge.request(method, url, body);
+    const bridge = JSON.parse(raw);
+    const payload = parsePayload(bridge.body);
+
+    if (!bridge.ok) {
+      throw Object.assign(new Error(payload.error || 'Erro de conexão'), {
+        code: payload.code,
+        status: bridge.status,
+      });
+    }
+
+    return payload;
+  }
+
   const r = await fetch(BASE() + url, {
     headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
     ...opts,

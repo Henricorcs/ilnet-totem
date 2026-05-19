@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -22,10 +23,18 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends Activity {
     private static final String TOTEM_URL = "https://totem.ilnet.com.br/";
     private static final String TOTEM_HOST = "totem.ilnet.com.br";
+    private static final String API_BASE_URL = "https://api.totem.ilnet.com.br";
     private static final int EXIT_TAP_TARGET = 7;
     private static final long EXIT_TAP_WINDOW_MS = 5000L;
 
@@ -67,7 +76,9 @@ public class MainActivity extends Activity {
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setAllowFileAccess(false);
         settings.setAllowContentAccess(false);
+        settings.setUserAgentString(settings.getUserAgentString() + " ILNETTotemApp/1.0");
 
+        webView.addJavascriptInterface(new ApiBridge(), "IlNetBridge");
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -189,5 +200,73 @@ public class MainActivity extends Activity {
     @Override
     public void onBackPressed() {
         webView.loadUrl(TOTEM_URL);
+    }
+
+    public static class ApiBridge {
+        @JavascriptInterface
+        public String request(String method, String path, String body) {
+            HttpURLConnection connection = null;
+            try {
+                if (path == null || !path.startsWith("/api/")) {
+                    return response(false, 400, "{\"error\":\"Caminho de API inválido\"}");
+                }
+
+                URL url = new URL(API_BASE_URL + path);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod(method == null ? "GET" : method.toUpperCase());
+                connection.setConnectTimeout(15000);
+                connection.setReadTimeout(30000);
+                connection.setRequestProperty("Accept", "application/json");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setRequestProperty("Origin", TOTEM_URL.substring(0, TOTEM_URL.length() - 1));
+
+                if (body != null && !body.isEmpty() && !"GET".equalsIgnoreCase(method)) {
+                    byte[] payload = body.getBytes(StandardCharsets.UTF_8);
+                    connection.setDoOutput(true);
+                    connection.setFixedLengthStreamingMode(payload.length);
+                    try (OutputStream output = connection.getOutputStream()) {
+                        output.write(payload);
+                    }
+                }
+
+                int status = connection.getResponseCode();
+                InputStream stream = status >= 200 && status < 400
+                    ? connection.getInputStream()
+                    : connection.getErrorStream();
+
+                String payload = readAll(stream);
+                return response(status >= 200 && status < 300, status, payload);
+            } catch (Exception e) {
+                String message = e.getMessage() == null ? "Falha de conexão" : e.getMessage();
+                return response(false, 0, "{\"error\":\"" + escapeJson(message) + "\"}");
+            } finally {
+                if (connection != null) connection.disconnect();
+            }
+        }
+
+        private static String readAll(InputStream stream) throws Exception {
+            if (stream == null) return "";
+
+            StringBuilder builder = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) builder.append(line);
+            }
+            return builder.toString();
+        }
+
+        private static String response(boolean ok, int status, String body) {
+            return "{\"ok\":" + ok
+                + ",\"status\":" + status
+                + ",\"body\":\"" + escapeJson(body == null ? "" : body) + "\"}";
+        }
+
+        private static String escapeJson(String value) {
+            return value
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r");
+        }
     }
 }
