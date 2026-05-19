@@ -47,8 +47,12 @@ function Reel({ prizes, currentIdx, spinning, stopped }) {
 }
 
 export default function SlotMachine({ session, go, prizes }) {
-  const { cpf, eventId, clientName } = session;
-  const name = clientName?.split(' ')[0] || '';
+  const { cpf, eventId, clientName, visitorName, participantType } = session;
+  const participantName = clientName || visitorName || '';
+  const name = participantName?.split(' ')[0] || '';
+  const participantLabel = participantType === 'visitor'
+    ? 'Visitante cadastrado'
+    : 'Cliente identificado';
 
   const [idxs,    setIdxs]    = useState([0,0,0]);
   const [spinning,setSpinning]= useState(false);
@@ -61,6 +65,11 @@ export default function SlotMachine({ session, go, prizes }) {
 
   const spin = async () => {
     if (spinning || !prizes.length) return;
+    if (!cpf || !eventId) {
+      setMsg('Cadastro incompleto. Volte ao inicio e tente novamente.');
+      return;
+    }
+
     setSpinning(true);
     setStopped([false,false,false]);
     setMsg('');
@@ -132,7 +141,7 @@ export default function SlotMachine({ session, go, prizes }) {
       <div style={{ textAlign:'center',marginTop:10 }}>
         {name && (
           <div style={{ display:'flex',justifyContent:'center',marginBottom:12 }}>
-            <ClientPill clientName={clientName} label="Cliente identificado" />
+            <ClientPill clientName={participantName} label={participantLabel} />
           </div>
         )}
         <div style={S.stepLabel}>PASSO 4 DE 4</div>

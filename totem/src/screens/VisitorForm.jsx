@@ -39,13 +39,20 @@ export default function VisitorForm({ go, goHome }) {
     if (Object.keys(e).length) return setErrors(e);
     setLoading(true);
     try {
-      await api.registerVisitor({
-        cpf:     form.cpf.replace(/\D/g,''),
-        name:    form.name.trim(),
+      const cleanCpf = form.cpf.replace(/\D/g,'');
+      const visitorName = form.name.trim();
+      const res = await api.registerVisitor({
+        cpf:     cleanCpf,
+        name:    visitorName,
         phone:   form.phone.replace(/\D/g,''),
         address: form.address.trim(),
       });
-      go('slot');
+      go('slot', {
+        cpf: cleanCpf,
+        eventId: res.event_id,
+        visitorName,
+        participantType: 'visitor',
+      });
     } catch (err) {
       if (err.code === 'duplicate_cpf')
         setErrors({ cpf:'Este CPF já se cadastrou neste evento.' });
