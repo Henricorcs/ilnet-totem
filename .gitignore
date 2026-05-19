@@ -24,5 +24,13 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Android
+android-kiosk/.gradle/
+android-kiosk/local.properties
+android-kiosk/app/build/
+android-kiosk/build/
+*.jks
+*.keystore
+
 # Docker volumes
 postgres-data/
