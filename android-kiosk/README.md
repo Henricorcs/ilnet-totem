@@ -34,6 +34,21 @@ App Android nativo para usar o tablet em modo totem. Ele abre `https://totem.iln
    Build > Generate Signed App Bundle / APK
    ```
 
+Tambem e possivel gerar pelo terminal:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Android\Android Studio\jbr'
+$env:ANDROID_HOME="$env:LOCALAPPDATA\Android\Sdk"
+$env:ANDROID_SDK_ROOT="$env:LOCALAPPDATA\Android\Sdk"
+.\gradlew.bat assembleDebug
+```
+
+O APK de teste sai em:
+
+```text
+app/build/outputs/apk/debug/app-debug.apk
+```
+
 ## Travamento simples
 
 Esse modo e rapido e nao exige reset do tablet.
