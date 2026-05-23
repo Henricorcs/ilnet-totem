@@ -90,7 +90,7 @@ async function init() {
   await pool.query(`
     INSERT INTO settings (key, value) VALUES
       ('win_chance', '40'),
-      ('idle_timeout', '30'),
+      ('idle_timeout', '60'),
       ('sound_video', 'true'),
       ('sound_effects', 'true')
     ON CONFLICT (key) DO NOTHING

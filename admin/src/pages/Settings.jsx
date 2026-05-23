@@ -3,7 +3,7 @@ import { api } from '../api.js';
 import { C, S, PageHeader, Spin } from '../components/ui.jsx';
 
 export default function Settings() {
-  const [cfg,    setCfg]    = useState({ win_chance:'40', idle_timeout:'30', sound_video:'true', sound_effects:'true' });
+  const [cfg,    setCfg]    = useState({ win_chance:'40', idle_timeout:'60', sound_video:'true', sound_effects:'true' });
   const [loading,setLoading]= useState(true);
   const [saving, setSaving] = useState(false);
   const [saved,  setSaved]  = useState(false);

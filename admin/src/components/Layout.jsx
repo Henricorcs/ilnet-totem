@@ -18,7 +18,7 @@ const NAV = [
   { to:'/settings',     icon:'ti-settings',       label:'Ajustes'   },
 ];
 
-const LOGO_SRC = '/assets/ilnet-logo-clean.svg';
+const LOGO_SRC = '/assets/logo_ilnet.svg';
 
 function Logo() {
   return (

@@ -16,7 +16,7 @@ export default function App() {
   const [session, setSession] = useState({});   // dados acumulados da sessão
   const [prizes,  setPrizes]  = useState([]);
   const [event,   setEvent]   = useState(null);
-  const [idleMs,  setIdleMs]  = useState(30000);
+  const [idleMs,  setIdleMs]  = useState(60000);
   const idleTimer = useRef(null);
 
   // Carrega evento ativo + prêmios + settings na montagem

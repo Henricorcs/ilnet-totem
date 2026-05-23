@@ -45,7 +45,13 @@ export default function ClientCPF({ go, session }) {
       // Se tiver mais de 1 registro (mesmo CPF, clientes dif) ou mais de 1 contrato, ir pra seleção
       // Aqui buscamos contratos do primeiro cliente
       const cRes = await api.getContracts(client.id);
-      const contracts = cRes.contracts || [];
+      const allContracts = cRes.contracts || [];
+      const ACTIVE_STATUS = new Set(['A','B','FA']);
+      const contracts = allContracts.filter(c => ACTIVE_STATUS.has(c.status));
+
+      if (contracts.length === 0) {
+        return setError('Nenhum contrato ativo encontrado.\nDeseja se cadastrar como visitante?');
+      }
 
       if (contracts.length > 1) {
         go('contract_select', {

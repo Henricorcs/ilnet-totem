@@ -9,7 +9,7 @@ const C = {
   gradBlue:'linear-gradient(135deg,#5BC5F5 0%,#1E7CD8 100%)',
 };
 
-const LOGO_SRC = '/assets/ilnet-logo-clean.svg';
+const LOGO_SRC = '/assets/logo_ilnet.svg';
 
 export default function Login() {
   const nav = useNavigate();

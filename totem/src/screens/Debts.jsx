@@ -11,16 +11,17 @@ function fmtDate(d) {
 }
 
 export default function Debts({ session, go }) {
-  const { debts = [], clientName } = session;
+  const { debts = [], clientName, contracts = [] } = session;
   const hasDebts = debts.length > 0;
   const overdueCount = debts.filter(d => new Date(d.due_date) < new Date()).length;
   const totalOpen = debts.reduce((sum, d) => sum + (Number(d.value) || 0), 0);
   const debtLabel = `${debts.length} fatura${debts.length > 1 ? 's' : ''}`;
+  const backTo = contracts.length > 1 ? 'contract_select' : 'client_cpf';
 
   return (
     <div style={S.screen}>
       <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center' }}>
-        <button style={S.back} onClick={() => go('client_cpf')}><i className="ti ti-arrow-left"/> Voltar</button>
+        <button style={S.back} onClick={() => go(backTo)}><i className="ti ti-arrow-left"/> Voltar</button>
         <span style={S.stepLabel}>PASSO 3 DE 4</span>
       </div>
 
