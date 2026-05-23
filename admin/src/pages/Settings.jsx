@@ -59,17 +59,18 @@ export default function Settings() {
         }
       />
       <div style={S.page}>
-        <Row label="Chance de ganhar" sub="Probabilidade de a roleta premiar o participante"
-          right={
-            <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-              <input type="range" min="0" max="100" value={cfg.win_chance}
-                onChange={e => setCfg(c=>({...c,win_chance:e.target.value}))}
-                style={{ width:140, accentColor:C.blue }}
-              />
-              <span style={{ fontSize:18, fontWeight:600, color:C.blue, minWidth:44 }}>{cfg.win_chance}%</span>
+        <div style={{ ...S.card, marginBottom:10, borderColor:'rgba(91,197,245,0.25)', background:'rgba(91,197,245,0.04)' }}>
+          <div style={{ display:'flex', alignItems:'flex-start', gap:10 }}>
+            <i className="ti ti-info-circle" style={{ fontSize:18, color:C.blue, marginTop:2 }}/>
+            <div>
+              <div style={{ fontSize:13, fontWeight:500, marginBottom:4 }}>Chance de ganhar</div>
+              <div style={{ fontSize:11, color:C.dim, lineHeight:1.5 }}>
+                Agora é configurada por prêmio (% absoluta). Vá em <b style={{ color:C.blue }}>Prêmios</b> e defina a chance de cada item.<br/>
+                O que sobrar até 100% é a chance de <i>"Não ganhou"</i>. Ex: TV 2% + Camiseta 28% = 70% não ganhou.
+              </div>
             </div>
-          }
-        />
+          </div>
+        </div>
 
         <Row label="Tempo de inatividade" sub="Totem volta à tela inicial após este tempo"
           right={

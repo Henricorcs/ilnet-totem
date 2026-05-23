@@ -115,11 +115,7 @@ router.post('/spin', async (req, res) => {
     if (part.rows[0].played_at)
       return res.status(409).json({ error: 'Já jogou neste evento' });
 
-    // Chance de ganhar (config)
-    const cfg = await db.query("SELECT value FROM settings WHERE key='win_chance'");
-    const chance = parseInt(cfg.rows[0]?.value || '40');
-
-    // Prêmios disponíveis
+    // Prêmios disponíveis (com peso = % absoluta de chance)
     const pRes = await db.query(
       `SELECT id, name, image_url, weight FROM prizes
        WHERE event_id=$1 AND (stock=-1 OR stock>0) ORDER BY id`,
@@ -127,18 +123,17 @@ router.post('/spin', async (req, res) => {
     );
     const prizes = pRes.rows;
 
-    const won = Math.random() * 100 < chance && prizes.length > 0;
+    // Sorteio: rola 0-100, percorre prêmios acumulando %. Sobra (100 - soma) = não ganhou.
     let prize = null;
-
-    if (won) {
-      const total = prizes.reduce((s, p) => s + p.weight, 0);
-      let rand = Math.random() * total;
+    if (prizes.length > 0) {
+      const rand = Math.random() * 100;
+      let cum = 0;
       for (const p of prizes) {
-        rand -= p.weight;
-        if (rand <= 0) { prize = p; break; }
+        cum += Number(p.weight) || 0;
+        if (rand < cum) { prize = p; break; }
       }
-      if (!prize) prize = prizes[prizes.length - 1];
     }
+    const won = !!prize;
 
     const winCode = won ? await uniqueCode() : null;
 

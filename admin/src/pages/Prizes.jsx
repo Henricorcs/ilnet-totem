@@ -10,7 +10,7 @@ export default function Prizes() {
   const [prizes,  setPrizes]  = useState([]);
   const [loading, setLoading] = useState(false);
   const [modal,   setModal]   = useState(null);
-  const [form,    setForm]    = useState({ name:'', stock:'-1', weight:'10' });
+  const [form,    setForm]    = useState({ name:'', stock:'-1', weight:'5' });
   const [imgFile, setImgFile] = useState(null);
   const [preview, setPreview] = useState('');
   const [saving,  setSaving]  = useState(false);
@@ -35,10 +35,12 @@ export default function Prizes() {
 
   const changeEvent = (id) => { setEventId(id); if (id) loadPrizes(id); };
 
-  const totalWeight = prizes.reduce((s,p) => s + p.weight, 0);
+  const totalWeight = prizes.reduce((s,p) => s + Number(p.weight || 0), 0);
+  const losePct     = Math.max(0, 100 - totalWeight);
+  const overflow    = totalWeight > 100;
 
   const openNew = () => {
-    setForm({ name:'', stock:'-1', weight:'10' });
+    setForm({ name:'', stock:'-1', weight:'5' });
     setImgFile(null); setPreview(''); setError('');
     setModal('new');
   };
@@ -81,15 +83,16 @@ export default function Prizes() {
     catch(e) { alert(e.message); }
   };
 
-  const weightOk = totalWeight === 100;
-
   return (
     <div>
       <PageHeader title="Prêmios" sub="ILNET TOTEM"
         action={
           <div style={{ display:'flex', gap:10, alignItems:'center' }}>
-            <span style={{ fontSize:11, color: weightOk?C.green:C.gold }}>
-              Pesos: {totalWeight}% / 100%{weightOk?' ✓':' ⚠'}
+            <span style={{ fontSize:11, color: overflow ? C.red : C.dim, textAlign:'right', lineHeight:1.35 }}>
+              {overflow
+                ? <>Soma {totalWeight}% &gt; 100% ⚠</>
+                : <>Soma {totalWeight}% · Não ganhar {losePct}%</>
+              }
             </span>
             <button style={S.btn} onClick={openNew}><i className="ti ti-plus"/>Novo prêmio</button>
           </div>
@@ -156,6 +159,40 @@ export default function Prizes() {
             </button>
           )}
         </div>
+
+        {/* Card "Não ganhou" — sobra explícita */}
+        {eventId && prizes.length > 0 && !overflow && (
+          <div style={{
+            marginTop:20, padding:'14px 16px',
+            background:'rgba(240,149,149,0.05)',
+            border:'1px dashed rgba(240,149,149,0.3)',
+            borderRadius:10,
+            display:'flex', alignItems:'center', justifyContent:'space-between', gap:14,
+          }}>
+            <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+              <i className="ti ti-mood-empty" style={{ fontSize:22, color:'rgba(240,149,149,0.8)' }}/>
+              <div>
+                <div style={{ fontSize:13, fontWeight:500 }}>Sobra para "Não ganhou"</div>
+                <div style={{ fontSize:11, color:C.dim, marginTop:2 }}>
+                  Quem cair aqui vê a tela de tentativa frustrada
+                </div>
+              </div>
+            </div>
+            <div style={{ fontSize:18, fontWeight:600, color:'rgba(240,149,149,0.9)' }}>{losePct}%</div>
+          </div>
+        )}
+        {overflow && (
+          <div style={{
+            marginTop:20, padding:'14px 16px',
+            background:'rgba(240,149,149,0.1)',
+            border:'1px solid rgba(240,149,149,0.5)',
+            borderRadius:10,
+            color:C.red, fontSize:13,
+          }}>
+            <i className="ti ti-alert-triangle" style={{ fontSize:18, marginRight:8, verticalAlign:'-3px' }}/>
+            A soma das chances passou de 100%. Reduza alguns prêmios pra ficar coerente — caso contrário os últimos prêmios da lista nunca caem.
+          </div>
+        )}
       </div>
 
       {/* Modal */}
@@ -183,7 +220,7 @@ export default function Prizes() {
             {[
               { key:'name',   label:'Nome do prêmio', type:'text' },
               { key:'stock',  label:'Estoque (-1 = ilimitado)', type:'number' },
-              { key:'weight', label:'Peso de chance (1-100)', type:'number' },
+              { key:'weight', label:'Chance de cair este prêmio (% — ex: 5 = 5% das pessoas ganham)', type:'number' },
             ].map(f => (
               <div key={f.key} style={{ marginBottom:12 }}>
                 <div style={{ fontSize:10, color:C.fade, letterSpacing:1, marginBottom:4, textTransform:'uppercase' }}>{f.label}</div>
