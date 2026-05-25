@@ -164,13 +164,13 @@ export default function SlotMachine({ session, go, prizes }) {
       {/* Header */}
       <div style={{ display:'flex',justifyContent:'flex-end',alignItems:'center' }}>
         <div style={{
-          display:'flex',alignItems:'center',gap:6,fontSize:12,color:C.gold,
-          padding:'6px 12px',borderRadius:999,
-          background:'rgba(255,201,87,0.10)',
-          border:'1px solid rgba(255,201,87,0.35)',
-          boxShadow:'0 0 12px rgba(255,201,87,0.15)',
+          display:'flex',alignItems:'center',gap:8,fontSize:13,color:C.gold,fontWeight:700,
+          padding:'8px 14px',borderRadius:999,
+          background:'#fff',
+          border:`1.5px solid rgba(199,134,26,0.40)`,
+          boxShadow:'0 4px 14px rgba(199,134,26,0.15)',
         }}>
-          <i className="ti ti-ticket" style={{fontSize:13}} aria-hidden="true"/>1 chance
+          <i className="ti ti-ticket" style={{fontSize:15}} aria-hidden="true"/>1 chance
         </div>
       </div>
 
@@ -182,13 +182,13 @@ export default function SlotMachine({ session, go, prizes }) {
         )}
         <div style={S.stepLabel}>PASSO 4 DE 4</div>
         <h1 style={{
-          fontSize:26,fontWeight:700,marginTop:4,
-          background:'linear-gradient(135deg,#FFD774 0%,#FFC957 50%,#E8A82F 100%)',
+          fontSize:30,fontWeight:900,marginTop:6,
+          background:'linear-gradient(135deg,#E0A52F 0%,#C7861A 50%,#9B6614 100%)',
           WebkitBackgroundClip:'text',backgroundClip:'text',
           WebkitTextFillColor:'transparent',
-          letterSpacing:'1px',
+          letterSpacing:'2px',
         }}>BOA SORTE!</h1>
-        <p style={{ fontSize:11,color:C.dim,marginTop:2,letterSpacing:'.5px' }}>3 iguais e o prêmio é seu</p>
+        <p style={{ fontSize:13,color:C.dim,marginTop:4,letterSpacing:'.5px' }}>3 iguais e o prêmio é seu</p>
       </div>
 
       {/* Máquina de cassino */}

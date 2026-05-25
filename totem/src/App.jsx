@@ -68,7 +68,7 @@ export default function App() {
   const props = { session, event, prizes, go, goHome };
 
   return (
-    <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden', background: '#050a18' }}>
+    <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden', background: '#f4f8fc' }}>
       {screen === 'attract'         && <Attract         {...props} />}
       {screen === 'entry'           && <Entry           {...props} />}
       {screen === 'client_cpf'      && <ClientCPF       {...props} />}

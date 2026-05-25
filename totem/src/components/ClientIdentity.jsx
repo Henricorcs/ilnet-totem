@@ -3,27 +3,27 @@ import { C } from '../theme.js';
 const TONES = {
   info: {
     icon: 'ti-user-check',
-    color: C.cyan,
-    bg: 'rgba(127,212,255,0.12)',
-    border: 'rgba(127,212,255,0.28)',
+    color: C.blue,
+    bg: 'rgba(30,124,216,0.08)',
+    border: 'rgba(30,124,216,0.28)',
   },
   success: {
     icon: 'ti-circle-check',
     color: C.green,
-    bg: 'rgba(93,202,165,0.12)',
-    border: 'rgba(93,202,165,0.28)',
+    bg: 'rgba(31,157,113,0.10)',
+    border: 'rgba(31,157,113,0.30)',
   },
   warning: {
     icon: 'ti-alert-circle',
     color: C.gold,
-    bg: 'rgba(255,201,87,0.12)',
-    border: 'rgba(255,201,87,0.28)',
+    bg: 'rgba(199,134,26,0.10)',
+    border: 'rgba(199,134,26,0.30)',
   },
   danger: {
     icon: 'ti-alert-triangle',
     color: C.red,
-    bg: 'rgba(240,149,149,0.12)',
-    border: 'rgba(240,149,149,0.28)',
+    bg: 'rgba(204,71,71,0.08)',
+    border: 'rgba(204,71,71,0.30)',
   },
 };
 
@@ -40,13 +40,14 @@ export function ClientPill({ clientName, label = 'Cliente identificado', tone = 
 
   return (
     <div style={{
-      display:'inline-flex',alignItems:'center',justifyContent:'center',gap:8,
-      maxWidth:'100%',padding:'8px 12px',borderRadius:999,
-      background:t.bg,border:`1px solid ${t.border}`,color:'#fff',
-      fontSize:13,fontWeight:600,lineHeight:1.2,
-      boxShadow:'0 10px 24px rgba(3,18,45,0.22)',
+      display:'inline-flex',alignItems:'center',justifyContent:'center',gap:10,
+      maxWidth:'100%',padding:'10px 16px',borderRadius:999,
+      background:t.bg,border:`1px solid ${t.border}`,
+      color:C.text,
+      fontSize:14,fontWeight:600,lineHeight:1.2,
+      boxShadow:'0 4px 14px rgba(13,91,168,0.08)',
     }}>
-      <i className={`ti ${t.icon}`} style={{fontSize:17,color:t.color,flexShrink:0}} aria-hidden="true"/>
+      <i className={`ti ${t.icon}`} style={{fontSize:19,color:t.color,flexShrink:0}} aria-hidden="true"/>
       <span style={{ minWidth:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>
         {label}: {firstName(clientName)}
       </span>
@@ -65,37 +66,37 @@ export function ClientIdentity({
   return (
     <section style={{
       position:'relative',overflow:'hidden',
-      margin:'18px 0 16px',padding:'18px 16px 16px',
+      margin:'18px 0 16px',padding:'20px 18px 18px',
       textAlign:'center',
-      background:'linear-gradient(180deg, rgba(94,197,245,0.14) 0%, rgba(94,197,245,0.045) 100%)',
-      border:`1px solid ${C.cardBd2}`,borderRadius:12,
-      boxShadow:'0 18px 44px rgba(2, 18, 46, 0.34)',
+      background:'#fff',
+      border:`1px solid ${C.cardBd}`,borderRadius:16,
+      boxShadow:'0 10px 28px rgba(13,91,168,0.10)',
     }}>
-      <div style={{ position:'absolute',top:0,left:0,right:0,height:3,background:C.gradBlue }} />
+      <div style={{ position:'absolute',top:0,left:0,right:0,height:4,background:C.gradBlue }} />
 
       <div style={{
         display:'inline-flex',alignItems:'center',gap:6,
-        padding:'5px 9px',borderRadius:999,
-        background:'rgba(127,212,255,0.10)',
-        border:'1px solid rgba(127,212,255,0.22)',
-        color:C.cyan,fontSize:11,fontWeight:700,
+        padding:'6px 12px',borderRadius:999,
+        background:'rgba(30,124,216,0.08)',
+        border:'1px solid rgba(30,124,216,0.20)',
+        color:C.blueDark,fontSize:12,fontWeight:700,
       }}>
-        <i className="ti ti-shield-check" style={{fontSize:14}} aria-hidden="true"/>
+        <i className="ti ti-shield-check" style={{fontSize:15}} aria-hidden="true"/>
         {badge}
       </div>
 
       <div style={{
-        width:58,height:58,margin:'14px auto 10px',
-        borderRadius:'50%',background:'rgba(91,197,245,0.12)',
-        border:`1px solid ${C.cardBd2}`,
+        width:64,height:64,margin:'14px auto 10px',
+        borderRadius:'50%',
+        background:'rgba(30,124,216,0.10)',
+        border:`1px solid ${C.cardBd}`,
         display:'flex',alignItems:'center',justifyContent:'center',
-        boxShadow:'inset 0 0 20px rgba(91,197,245,0.12)',
       }}>
-        <i className="ti ti-user-check" style={{fontSize:30,color:C.cyan}} aria-hidden="true"/>
+        <i className="ti ti-user-check" style={{fontSize:34,color:C.blue}} aria-hidden="true"/>
       </div>
 
       <h2 style={{
-        fontSize:24,fontWeight:700,lineHeight:1.1,color:'#fff',
+        fontSize:26,fontWeight:800,lineHeight:1.15,color:C.text,
         overflowWrap:'anywhere',
       }}>
         Olá, {name}!
@@ -103,7 +104,7 @@ export function ClientIdentity({
 
       {clientName && clientName.trim() !== name && (
         <div style={{
-          marginTop:5,fontSize:12,color:C.fade,lineHeight:1.25,
+          marginTop:6,fontSize:13,color:C.fade,lineHeight:1.3,
           overflowWrap:'anywhere',
         }}>
           {clientName}
@@ -112,8 +113,8 @@ export function ClientIdentity({
 
       {description && (
         <p style={{
-          margin:'10px auto 0',maxWidth:310,
-          fontSize:13,color:C.dim,lineHeight:1.45,
+          margin:'12px auto 0',maxWidth:340,
+          fontSize:14,color:C.dim,lineHeight:1.5,
         }}>
           {description}
         </p>
@@ -131,12 +132,12 @@ export function ClientIdentity({
                 key={`${item.label}-${item.icon || t.icon}`}
                 style={{
                   display:'inline-flex',alignItems:'center',gap:6,
-                  padding:'7px 10px',borderRadius:999,
+                  padding:'8px 12px',borderRadius:999,
                   background:t.bg,border:`1px solid ${t.border}`,
-                  color:t.color,fontSize:12,fontWeight:700,lineHeight:1.1,
+                  color:t.color,fontSize:13,fontWeight:700,lineHeight:1.1,
                 }}
               >
-                <i className={`ti ${item.icon || t.icon}`} style={{fontSize:15}} aria-hidden="true"/>
+                <i className={`ti ${item.icon || t.icon}`} style={{fontSize:16}} aria-hidden="true"/>
                 {item.label}
               </span>
             );

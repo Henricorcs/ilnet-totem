@@ -21,7 +21,9 @@ export default function Debts({ session, go }) {
   return (
     <div style={S.screen}>
       <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center' }}>
-        <button style={S.back} onClick={() => go(backTo)}><i className="ti ti-arrow-left"/> Voltar</button>
+        <button style={S.back} onClick={() => go(backTo)}>
+          <i className="ti ti-arrow-left" style={{ fontSize:18 }}/> Voltar
+        </button>
         <span style={S.stepLabel}>PASSO 3 DE 4</span>
       </div>
 
@@ -52,17 +54,17 @@ export default function Debts({ session, go }) {
             return (
               <div key={d.id} style={{
                 ...S.card,
-                borderColor: overdue ? 'rgba(240,149,149,0.4)' : C.cardBd,
-                background:  overdue ? 'rgba(240,149,149,0.05)' : C.card,
+                borderColor: overdue ? 'rgba(204,71,71,0.40)' : C.cardBd,
+                background:  overdue ? 'rgba(204,71,71,0.04)' : '#fff',
                 display:'flex',alignItems:'center',justifyContent:'space-between',
               }}>
                 <div>
-                  <div style={{ fontSize:12,color:C.dim }}>{d.description}</div>
-                  <div style={{ fontSize:18,fontWeight:600,color:overdue?C.red:'#fff' }}>{fmt(d.value)}</div>
-                  <div style={{ fontSize:11,color:C.fade }}>Venc. {fmtDate(d.due_date)}</div>
+                  <div style={{ fontSize:13,color:C.fade,marginBottom:2 }}>{d.description}</div>
+                  <div style={{ fontSize:22,fontWeight:700,color:overdue?C.red:C.text }}>{fmt(d.value)}</div>
+                  <div style={{ fontSize:12,color:C.dim,marginTop:2 }}>Venc. {fmtDate(d.due_date)}</div>
                 </div>
                 {overdue && (
-                  <span style={{ fontSize:9,padding:'3px 8px',borderRadius:4,background:'rgba(240,149,149,0.15)',color:C.red,border:'1px solid rgba(240,149,149,0.3)' }}>
+                  <span style={{ fontSize:10,fontWeight:700,padding:'5px 10px',borderRadius:6,background:'rgba(204,71,71,0.10)',color:C.red,border:'1px solid rgba(204,71,71,0.30)',letterSpacing:'1px' }}>
                     VENCIDA
                   </span>
                 )}
@@ -72,23 +74,23 @@ export default function Debts({ session, go }) {
         </div>
       )}
 
-      <div style={{ marginTop:hasDebts ? 0 : 'auto',display:'flex',flexDirection:'column',gap:10 }}>
+      <div style={{ marginTop:hasDebts ? 0 : 'auto',display:'flex',flexDirection:'column',gap:12 }}>
         {hasDebts ? (
           <>
             <button
               style={S.btnPrimary}
               onClick={() => go('pix', { activeDebt: debts[0] })}
             >
-              <i className="ti ti-qrcode" style={{fontSize:22}} aria-hidden="true"/>
+              <i className="ti ti-qrcode" style={{fontSize:24}} aria-hidden="true"/>
               Pagar agora via PIX
             </button>
-            <div style={{ textAlign:'center',fontSize:11,color:C.fade }}>
+            <div style={{ textAlign:'center',fontSize:13,color:C.dim }}>
               Pague pra participar da roleta
             </div>
           </>
         ) : (
           <button style={S.btnPrimary} onClick={() => go('slot')}>
-            <i className="ti ti-confetti" style={{fontSize:22}} aria-hidden="true"/>
+            <i className="ti ti-confetti" style={{fontSize:24}} aria-hidden="true"/>
             Jogar a roleta!
           </button>
         )}

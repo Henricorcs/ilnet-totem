@@ -1,31 +1,25 @@
 import { useState } from 'react';
 import { api } from '../api.js';
 import { C, S } from '../theme.js';
+import Keyboard from '../components/Keyboard.jsx';
 
-function formatCPF(digits) {
-  const d = digits.padEnd(11, ' ');
-  return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6,9)}-${d.slice(9,11)}`;
+function formatCPFDisplay(digits) {
+  const d = digits.padEnd(11, '·');
+  return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6,9)}-${d.slice(9,11)}`.replace(/·/g,'_');
 }
 
-const KEYS = ['1','2','3','4','5','6','7','8','9','←','0','✓'];
-
-export default function ClientCPF({ go, session }) {
+export default function ClientCPF({ go }) {
   const [digits,  setDigits]  = useState('');
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState('');
 
-  const handleKey = async (k) => {
-    if (k === '←') return setDigits(d => d.slice(0,-1));
-    if (k === '✓') return submit();
-    if (digits.length < 11) setDigits(d => d + k);
-  };
+  const ok = digits.length === 11;
 
   const submit = async () => {
-    if (digits.length !== 11) return setError('Digite os 11 dígitos do CPF');
+    if (!ok) return;
     setError('');
     setLoading(true);
     try {
-      // Verifica se já jogou
       const check = await api.checkCPF(digits);
       if (!check.can_participate) {
         if (check.reason === 'already_played')
@@ -34,23 +28,20 @@ export default function ClientCPF({ go, session }) {
           return setError('Não há evento ativo no momento.');
       }
 
-      // Busca no IXC
       const res = await api.findClient(digits);
       if (!res.found)
-        return setError('CPF não encontrado como cliente ILNET.\nDeseja se cadastrar como visitante?');
+        return setError('CPF não encontrado como cliente ILNET. Volte e cadastre-se como visitante.');
 
       const client  = res.clients[0];
       const eventId = check.event_id;
 
-      // Se tiver mais de 1 registro (mesmo CPF, clientes dif) ou mais de 1 contrato, ir pra seleção
-      // Aqui buscamos contratos do primeiro cliente
       const cRes = await api.getContracts(client.id);
       const allContracts = cRes.contracts || [];
       const ACTIVE_STATUS = new Set(['A','B','FA']);
       const contracts = allContracts.filter(c => ACTIVE_STATUS.has(c.status));
 
       if (contracts.length === 0) {
-        return setError('Nenhum contrato ativo encontrado.\nDeseja se cadastrar como visitante?');
+        return setError('Nenhum contrato ativo encontrado. Volte e cadastre-se como visitante.');
       }
 
       if (contracts.length > 1) {
@@ -59,7 +50,6 @@ export default function ClientCPF({ go, session }) {
           contracts, eventId,
         });
       } else {
-        // Registra e vai pra débitos
         await api.registerClient({ cpf: digits, name: client.name, ixcClientId: client.id, ixcContractId: contracts[0]?.id });
         const dRes = await api.getDebts(contracts[0]?.id);
         go('debts', {
@@ -74,74 +64,66 @@ export default function ClientCPF({ go, session }) {
     }
   };
 
-  const displayCPF = formatCPF(digits);
-
   return (
     <div style={S.screen}>
-      <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center' }}>
-        <button style={S.back} onClick={() => go('entry')}><i className="ti ti-arrow-left"/> Voltar</button>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+        <button style={S.back} onClick={() => go('entry')}>
+          <i className="ti ti-arrow-left" style={{ fontSize:18 }}/> Voltar
+        </button>
         <span style={S.stepLabel}>PASSO 2 DE 4</span>
       </div>
 
-      <div style={{ textAlign:'center',marginTop:20,marginBottom:16 }}>
-        <h2 style={{ fontSize:20,fontWeight:500 }}>Digite seu CPF</h2>
-        <p style={{ fontSize:12,color:C.dim,marginTop:4 }}>Para identificarmos sua conta</p>
+      <div style={{ textAlign:'center', marginTop:24, marginBottom:14 }}>
+        <div style={{
+          width:64, height:64, margin:'0 auto 12px', borderRadius:'50%',
+          background:'rgba(30,124,216,0.10)', border:`1px solid ${C.cardBd}`,
+          display:'flex', alignItems:'center', justifyContent:'center',
+        }}>
+          <i className="ti ti-id" style={{ fontSize:32, color:C.blue }}/>
+        </div>
+        <h2 style={{ fontSize:24, fontWeight:700, color:C.text }}>Digite seu CPF</h2>
+        <p style={{ fontSize:14, color:C.dim, marginTop:6 }}>Pra identificarmos sua conta na ILNET</p>
       </div>
 
       {/* Display CPF */}
       <div style={{
-        background:C.card,border:`1.5px solid ${digits.length===11?C.blue:C.cardBd}`,
-        borderRadius:12,padding:'14px 16px',textAlign:'center',marginBottom:4,
+        background:'#fff',
+        border:`2px solid ${ok ? C.blue : C.cardBd}`,
+        borderRadius:14, padding:'18px 16px', textAlign:'center', marginBottom:6,
+        boxShadow:'0 4px 14px rgba(13,91,168,0.08)',
         transition:'border-color .2s',
       }}>
-        <div style={{ fontFamily:'monospace',fontSize:22,letterSpacing:2,color:'#fff' }}>
-          {displayCPF.slice(0,7)}
-          <span style={{ color: digits.length >= 7 ? '#fff' : C.fade }}>
-            {displayCPF.slice(7)}
-          </span>
+        <div style={{ fontFamily:'monospace', fontSize:28, letterSpacing:3, color: ok ? C.blue : C.text, fontWeight:700 }}>
+          {formatCPFDisplay(digits)}
         </div>
       </div>
 
       {error && (
-        <div style={{ color:C.red,fontSize:12,textAlign:'center',padding:'6px 0',whiteSpace:'pre-line' }}>
+        <div style={{ color:C.red, fontSize:13, textAlign:'center', padding:'8px 0', whiteSpace:'pre-line' }}>
           {error}
         </div>
       )}
 
-      {/* Teclado numérico */}
-      <div style={{ display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginTop:12,flex:1 }}>
-        {KEYS.map(k => (
-          <button
-            key={k}
-            disabled={loading || (k==='✓' && digits.length<11)}
-            onClick={() => handleKey(k)}
-            style={{
-              background: k==='✓' ? (digits.length===11 ? C.gradBlue : C.card) : C.card,
-              border: `1px solid ${k==='←' ? 'rgba(240,149,149,0.3)' : C.cardBd}`,
-              borderRadius:10,
-              color: k==='←' ? C.red : '#fff',
-              fontSize: k==='✓'||k==='←' ? 22 : 22,
-              fontWeight: 500,
-              cursor: 'pointer',
-              display:'flex',alignItems:'center',justifyContent:'center',
-              touchAction:'manipulation',
-              opacity: loading ? 0.6 : 1,
-              minHeight: 60,
-            }}
-          >
-            {k === '✓' ? <i className="ti ti-check" style={{fontSize:22}} aria-hidden="true"/>
-              : k === '←' ? <i className="ti ti-backspace" style={{fontSize:22}} aria-hidden="true"/>
-              : k}
-          </button>
-        ))}
-      </div>
-
       {loading && (
-        <div style={{ textAlign:'center',marginTop:12,color:C.dim,fontSize:13 }}>
-          <i className="ti ti-loader-2" style={{fontSize:20,animation:'spin 1s linear infinite'}}/> Consultando...
-          <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+        <div style={{ textAlign:'center', marginTop:6, color:C.dim, fontSize:14 }}>
+          <i className="ti ti-loader-2" style={{ fontSize:20, animation:'spin 1s linear infinite', verticalAlign:'-3px', marginRight:6 }}/>
+          Consultando IXC...
         </div>
       )}
+
+      {/* Teclado */}
+      <div style={{ flex:1, display:'flex', alignItems:'flex-end', marginTop:10 }}>
+        <Keyboard
+          layout="numeric"
+          value={digits}
+          onChange={v => setDigits(v.replace(/\D/g,'').slice(0,11))}
+          maxLength={11}
+          onSubmit={submit}
+          submitDisabled={!ok || loading}
+        />
+      </div>
+
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }
