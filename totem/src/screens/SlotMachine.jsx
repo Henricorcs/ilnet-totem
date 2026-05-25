@@ -1,27 +1,64 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { api } from '../api.js';
 import { C, S } from '../theme.js';
 import { ClientPill } from '../components/ClientIdentity.jsx';
 
 const API_URL = () => window.__API_URL__ || 'http://localhost:3001';
 const SH = 120;
+const IMG_SIZE = Math.round(SH * 0.7); // 84px fixo — não muda durante o giro
+
+function resolveImg(image_url) {
+  if (!image_url) return null;
+  if (/^https?:\/\//i.test(image_url)) return image_url;
+  return API_URL() + image_url;
+}
 
 // Um reel: lista de símbolos que flipa rapidamente
 function Reel({ prizes, currentIdx, spinning, stopped }) {
   const prev = (currentIdx - 1 + prizes.length) % prizes.length;
   const next = (currentIdx + 1) % prizes.length;
 
-  const Symbol = ({ p, scale = 1, opacity = 1 }) => (
-    <div style={{ height:SH,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}>
-      {p?.image_url ? (
-        <img src={API_URL() + p.image_url} alt={p.name}
-          style={{ width:SH*0.7*scale,height:SH*0.7*scale,objectFit:'contain',opacity,transition:'opacity .15s' }}
-        />
-      ) : (
-        <i className="ti ti-gift" style={{ fontSize:SH*0.55*scale,color:C.gold,opacity }} aria-hidden="true"/>
-      )}
-    </div>
-  );
+  const Symbol = ({ p, scale = 1, opacity = 1 }) => {
+    const src = resolveImg(p?.image_url);
+    return (
+      <div style={{
+        height:SH,
+        display:'flex',alignItems:'center',justifyContent:'center',
+        flexShrink:0,
+      }}>
+        <div style={{
+          width:IMG_SIZE, height:IMG_SIZE,
+          display:'flex',alignItems:'center',justifyContent:'center',
+          transform:`scale(${scale})`,
+          transformOrigin:'center center',
+          transition:'transform .15s ease',
+          opacity,
+          willChange:'transform, opacity',
+        }}>
+          {src ? (
+            <img
+              src={src}
+              alt={p.name}
+              draggable={false}
+              decoding="sync"
+              loading="eager"
+              style={{
+                width:IMG_SIZE, height:IMG_SIZE,
+                objectFit:'contain',
+                imageRendering:'auto',
+                pointerEvents:'none',
+                userSelect:'none',
+                /* Filtro pra PNG transparente ficar visível sobre fundo escuro */
+                filter:'drop-shadow(0 2px 4px rgba(0,0,0,0.45))',
+              }}
+            />
+          ) : (
+            <i className="ti ti-gift" style={{ fontSize:IMG_SIZE*0.78, color:C.gold }} aria-hidden="true"/>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div style={{
@@ -93,14 +130,36 @@ export default function SlotMachine({ session, go, prizes }) {
   const [stopped,  setStopped]  = useState([false,false,false]);
   const [msg,      setMsg]      = useState('');
   const [leverDown,setLeverDown]= useState(false);
+  const [imgsReady,setImgsReady]= useState(false);
   const intervals = useRef([null,null,null]);
+
+  // Pré-carrega todas as PNGs antes de permitir o giro — evita flicker
+  useEffect(() => {
+    if (!prizes.length) { setImgsReady(true); return; }
+    let remaining = 0;
+    const loaders = [];
+    prizes.forEach(p => {
+      const src = resolveImg(p.image_url);
+      if (!src) return;
+      remaining++;
+      const img = new Image();
+      img.onload  = () => { remaining--; if (remaining === 0) setImgsReady(true); };
+      img.onerror = () => { remaining--; if (remaining === 0) setImgsReady(true); };
+      img.src = src;
+      loaders.push(img);
+    });
+    if (remaining === 0) setImgsReady(true);
+    // Timeout de segurança — libera giro mesmo se alguma PNG falhar
+    const safety = setTimeout(() => setImgsReady(true), 3000);
+    return () => clearTimeout(safety);
+  }, [prizes]);
 
   const safeLen = prizes.length || 1;
   const allStopped = stopped.every(Boolean);
   const allMatch = allStopped && idxs[0] === idxs[1] && idxs[1] === idxs[2];
 
   const spin = async () => {
-    if (spinning || !prizes.length) return;
+    if (spinning || !prizes.length || !imgsReady) return;
     if (!cpf || !eventId) {
       setMsg('Cadastro incompleto. Volte ao inicio e tente novamente.');
       return;
@@ -314,16 +373,18 @@ export default function SlotMachine({ session, go, prizes }) {
           boxShadow: spinning
             ? 'none'
             : '0 14px 32px rgba(255,201,87,0.5), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -3px 0 rgba(0,0,0,0.15)',
-          opacity: spinning || !prizes.length ? 0.75 : 1,
-          cursor:  spinning ? 'not-allowed' : 'pointer',
+          opacity: spinning || !prizes.length || !imgsReady ? 0.75 : 1,
+          cursor:  spinning || !imgsReady ? 'not-allowed' : 'pointer',
           textTransform:'uppercase',
         }}
         onClick={spin}
-        disabled={spinning || !prizes.length}
+        disabled={spinning || !prizes.length || !imgsReady}
         aria-label="Girar"
       >
         {spinning
           ? <><i className="ti ti-loader-2" style={{fontSize:22,animation:'spin 1s linear infinite'}} aria-hidden="true"/>Girando...</>
+          : !imgsReady
+          ? <><i className="ti ti-loader-2" style={{fontSize:22,animation:'spin 1s linear infinite'}} aria-hidden="true"/>Preparando...</>
           : <><i className="ti ti-player-play-filled" style={{fontSize:22}} aria-hidden="true"/>Girar a sorte</>
         }
       </button>
