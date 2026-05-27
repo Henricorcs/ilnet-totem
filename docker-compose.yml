@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ilnet_totem
+      POSTGRES_USER: ilnet
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-ilnet2026secure}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - totem-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ilnet -d ilnet_totem"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://ilnet:${DB_PASSWORD:-ilnet2026secure}@postgres:5432/ilnet_totem
+      IXC_BASE_URL: https://saomateus.cas.net.br
+      IXC_USER: ${IXC_USER}
+      IXC_PASS: ${IXC_PASS}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-ilnet@2026}
+      PORT: 3001
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - totem-net
+    ports:
+      - "3001:3001"
+
+  totem:
+    build: ./totem
+    restart: unless-stopped
+    environment:
+      API_URL: ${API_URL:-http://localhost:3001}
+    networks:
+      - totem-net
+    ports:
+      - "3000:80"
+
+  admin:
+    build: ./admin
+    restart: unless-stopped
+    environment:
+      API_URL: ${API_URL:-http://localhost:3001}
+    networks:
+      - totem-net
+    ports:
+      - "3002:80"
+
+volumes:
+  pgdata:
+  uploads:
+
+networks:
+  totem-net:
+    driver: bridge

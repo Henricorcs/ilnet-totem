@@ -1,0 +1,36 @@
+# Environment
+.env
+*.env.local
+
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build outputs
+dist/
+build/
+*/dist/
+*/build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Android
+android-kiosk/.gradle/
+android-kiosk/local.properties
+android-kiosk/app/build/
+android-kiosk/build/
+*.jks
+*.keystore
+
+# Docker volumes
+postgres-data/
