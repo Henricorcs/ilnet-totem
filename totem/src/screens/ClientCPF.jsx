@@ -82,7 +82,7 @@ export default function ClientCPF({ go }) {
       </div>
 
       <div style={{ textAlign:'center', marginTop:16, marginBottom:14 }}>
-        <img src="/assets/logo_ilnet.svg" alt="ILNET" style={{ height:44, marginBottom:14, objectFit:'contain' }}/>
+        <img src="/assets/logo_ilnet.svg" alt="ILNET" style={{ width:'80%', maxWidth:340, height:'auto', marginBottom:14, objectFit:'contain' }}/>
         <h2 style={{ fontSize:24, fontWeight:700, color:C.text }}>Digite seu CPF</h2>
         <p style={{ fontSize:14, color:C.dim, marginTop:6 }}>Pra identificarmos sua conta na ILNET</p>
       </div>
