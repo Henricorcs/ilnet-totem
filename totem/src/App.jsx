@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from './api.js';
+import { resumeAudio } from './utils/sounds.js';
 import Attract        from './screens/Attract.jsx';
 import Entry          from './screens/Entry.jsx';
 import ClientCPF      from './screens/ClientCPF.jsx';
@@ -48,13 +49,14 @@ export default function App() {
   }, [screen, idleMs]);
 
   useEffect(() => {
-    window.addEventListener('touchstart', resetIdle);
-    window.addEventListener('click',      resetIdle);
+    const handler = (e) => { resumeAudio(); resetIdle(e); };
+    window.addEventListener('touchstart', handler);
+    window.addEventListener('click',      handler);
     resetIdle();
     return () => {
       clearTimeout(idleTimer.current);
-      window.removeEventListener('touchstart', resetIdle);
-      window.removeEventListener('click',      resetIdle);
+      window.removeEventListener('touchstart', handler);
+      window.removeEventListener('click',      handler);
     };
   }, [resetIdle]);
 
@@ -69,8 +71,8 @@ export default function App() {
 
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden', background: '#f4f8fc' }}>
-      <style>{`@keyframes screenEnter{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}`}</style>
-      <div key={screen} style={{ position:'absolute', inset:0, animation:'screenEnter 0.30s cubic-bezier(0.22,1,0.36,1)' }}>
+      <style>{`@keyframes screenEnter{0%{opacity:0;transform:translateX(28px) scale(0.98)}60%{opacity:1}100%{opacity:1;transform:translateX(0) scale(1)}}`}</style>
+      <div key={screen} style={{ position:'absolute', inset:0, animation:'screenEnter 0.38s cubic-bezier(0.22,1,0.36,1)' }}>
         {screen === 'attract'         && <Attract         {...props} />}
         {screen === 'entry'           && <Entry           {...props} />}
         {screen === 'client_cpf'      && <ClientCPF       {...props} />}

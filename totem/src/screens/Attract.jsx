@@ -119,39 +119,69 @@ export default function Attract({ go, event, prizes = [] }) {
         )}
       </div>
 
-      {/* Carrossel de prêmios */}
-      <div style={{ zIndex:2, width:'100%', display:'flex', flexDirection:'column', alignItems:'center', gap:12 }}>
+      {/* Carrossel — 3 prêmios visíveis */}
+      <div style={{ zIndex:2, width:'100%', display:'flex', flexDirection:'column', alignItems:'center', gap:14 }}>
         {featured ? (
-          <div key={featured.id} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{
-            display:'flex',alignItems:'center',gap:20,
-            padding:'20px 26px',
-            background:'#fff',
-            border:'1.5px solid rgba(199,134,26,0.45)',
-            borderRadius:24,
-            boxShadow:'0 14px 36px rgba(199,134,26,0.18), 0 0 0 1px rgba(199,134,26,0.10) inset',
-            animation:'prizeIn .6s ease-out',
-            maxWidth: 420,
-            width:'100%',
-          }}>
-            <div style={{
-              width:96,height:96,borderRadius:20,
-              background:'rgba(199,134,26,0.12)',
-              display:'flex',alignItems:'center',justifyContent:'center',
-              flexShrink:0,
-              border:'1px solid rgba(199,134,26,0.30)',
-            }}>
-              {featured.image_url
-                ? <img src={API_URL() + featured.image_url} alt={featured.name} style={{ width:74,height:74,objectFit:'contain' }}/>
-                : <i className="ti ti-gift" style={{ fontSize:48, color:C.gold }} aria-hidden="true"/>}
+          <>
+            <div style={{ fontSize:12,letterSpacing:'3px',color:C.gold,fontWeight:800,marginBottom:2 }}>
+              ★ PRÊMIOS EM JOGO ★
             </div>
-            <div style={{ textAlign:'left',flex:1,minWidth:0 }}>
-              <div style={{ fontSize:12,letterSpacing:'2px',color:C.gold,marginBottom:5,fontWeight:700 }}>PRÊMIO EM JOGO</div>
-              <div style={{ fontSize:22,fontWeight:800,color:C.text,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>
-                {featured.name}
-              </div>
+            <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}
+              style={{
+                display:'flex',alignItems:'center',justifyContent:'center',gap:10,
+                width:'100%',maxWidth:480,
+              }}
+            >
+              {[-1, 0, 1].map(offset => {
+                const len = featuredPrizes.length;
+                const idx = ((currentIdx + offset) % len + len) % len;
+                const p = featuredPrizes[idx];
+                const isCenter = offset === 0;
+                const isSide = !isCenter && len > 1;
+                if (isSide && len < 3) return null;
+                return (
+                  <div key={`${p.id}-${offset}`} style={{
+                    flex: isCenter ? '1 1 60%' : '0 1 22%',
+                    display:'flex',flexDirection:'column',alignItems:'center',
+                    padding: isCenter ? '18px 14px' : '12px 8px',
+                    background:'#fff',
+                    border: isCenter ? '1.5px solid rgba(199,134,26,0.45)' : '1px solid rgba(199,134,26,0.20)',
+                    borderRadius: isCenter ? 22 : 16,
+                    boxShadow: isCenter
+                      ? '0 14px 36px rgba(199,134,26,0.22), 0 0 0 1px rgba(199,134,26,0.10) inset'
+                      : '0 6px 16px rgba(13,91,168,0.08)',
+                    transform: isCenter ? 'scale(1)' : 'scale(0.92)',
+                    opacity: isCenter ? 1 : 0.55,
+                    transition: 'transform .5s ease, opacity .5s ease',
+                  }}>
+                    <div style={{
+                      width: isCenter ? 96 : 56, height: isCenter ? 96 : 56,
+                      borderRadius: isCenter ? 20 : 12,
+                      background:'rgba(199,134,26,0.12)',
+                      display:'flex',alignItems:'center',justifyContent:'center',
+                      border:'1px solid rgba(199,134,26,0.30)',
+                      transition:'all .5s ease',
+                    }}>
+                      {p.image_url
+                        ? <img src={API_URL() + p.image_url} alt={p.name}
+                            style={{ width: isCenter ? 74 : 42, height: isCenter ? 74 : 42, objectFit:'contain', transition:'all .5s ease' }}/>
+                        : <i className="ti ti-gift" style={{ fontSize: isCenter ? 48 : 28, color:C.gold }} aria-hidden="true"/>}
+                    </div>
+                    {isCenter && (
+                      <div style={{
+                        fontSize:18,fontWeight:800,color:C.text,
+                        marginTop:10,textAlign:'center',
+                        overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',
+                        maxWidth:'100%',
+                      }}>
+                        {p.name}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-            <i className="ti ti-sparkles" style={{ fontSize:32,color:C.gold }} aria-hidden="true"/>
-          </div>
+          </>
         ) : (
           <div style={{ fontSize:15,color:C.dim,lineHeight:1.5,padding:'0 12px',textAlign:'center' }}>
             Cadastre-se, jogue a sorte e leve um prêmio pra casa

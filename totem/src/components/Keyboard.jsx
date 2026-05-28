@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { C } from '../theme.js';
+import { playClick } from '../utils/sounds.js';
 
 // Layouts
 const LAYOUTS = {
@@ -48,13 +49,15 @@ export default function Keyboard({
     if (keepCase === 'upper') out = out.toUpperCase();
     else if (keepCase === 'lower') out = out.toLowerCase();
     else if (!shift && layout === 'qwerty') out = out.toLowerCase();
+    playClick();
     onChange(value + out);
     if (shift) setShift(false);
   }, [value, maxLength, shift, layout, keepCase, onChange]);
 
-  const back = useCallback(() => onChange(value.slice(0, -1)), [value, onChange]);
+  const back = useCallback(() => { playClick(); onChange(value.slice(0, -1)); }, [value, onChange]);
   const space = useCallback(() => {
     if (value.length >= maxLength) return;
+    playClick();
     onChange(value + ' ');
   }, [value, maxLength, onChange]);
 

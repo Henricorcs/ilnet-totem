@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 import { C, S } from '../theme.js';
+import { playLose } from '../utils/sounds.js';
 
 export default function Lost({ goHome }) {
   useEffect(() => {
+    playLose();
     const t = setTimeout(goHome, 30000);
     return () => clearTimeout(t);
   }, []);

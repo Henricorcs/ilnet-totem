@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { C, S } from '../theme.js';
+import { playWin } from '../utils/sounds.js';
 
 const API_URL = () => window.__API_URL__ || 'http://localhost:3001';
 
@@ -7,6 +8,7 @@ export default function Won({ session, goHome }) {
   const { prize, winCode } = session;
 
   useEffect(() => {
+    playWin();
     const t = setTimeout(goHome, 60000);
     return () => clearTimeout(t);
   }, []);

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { api } from '../api.js';
 import { C, S } from '../theme.js';
 import { ClientPill } from '../components/ClientIdentity.jsx';
+import { playSpinStart, playReelStop } from '../utils/sounds.js';
 
 const API_URL = () => window.__API_URL__ || 'http://localhost:3001';
 const SH = 190;
@@ -161,6 +162,7 @@ export default function SlotMachine({ session, go, prizes }) {
     setSpinning(true);
     setStopped([false,false,false]);
     setMsg('');
+    playSpinStart();
 
     for (let r = 0; r < 3; r++) {
       intervals.current[r] = setInterval(() => {
@@ -198,6 +200,7 @@ export default function SlotMachine({ session, go, prizes }) {
       clearInterval(intervals.current[r]);
       setIdxs(prev => { const n=[...prev]; n[r]=targets[r]; return n; });
       setStopped(prev => { const n=[...prev]; n[r]=true; return n; });
+      playReelStop();
     }
 
     setSpinning(false);
