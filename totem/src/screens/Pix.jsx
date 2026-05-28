@@ -89,7 +89,6 @@ export default function Pix({ session, go, goHome }) {
 
       <div style={{ marginTop:18,marginBottom:14 }}>
         <h2 style={{ fontSize:22,fontWeight:700,color:C.text }}>Pagamento via PIX</h2>
-        <p style={{ fontSize:14,color:C.dim,marginTop:4 }}>Quite pra liberar sua chance</p>
       </div>
 
       <div style={{
