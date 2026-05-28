@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { C } from '../theme.js';
 
 const LOGO_SRC = '/assets/logo_ilnet.svg';
@@ -38,17 +38,25 @@ export default function Attract({ go, event, prizes = [] }) {
   const [time, setTime] = useState(new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));
   const [tick, setTick] = useState(0);
   const touchX = useRef(null);
+  const cycleRef = useRef(null);
 
   useEffect(() => {
     const id = setInterval(() => setTime(new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})), 30000);
     return () => clearInterval(id);
   }, []);
 
-  useEffect(() => {
+  // Auto-cycle dos prêmios — reinicia a cada interação manual pra evitar
+  // disparo duplo logo após swipe.
+  const startCycle = useCallback(() => {
+    clearInterval(cycleRef.current);
     if (!featuredPrizes.length) return;
-    const id = setInterval(() => setTick(t => t + 1), 2800);
-    return () => clearInterval(id);
+    cycleRef.current = setInterval(() => setTick(t => t + 1), 2800);
   }, [featuredPrizes.length]);
+
+  useEffect(() => {
+    startCycle();
+    return () => clearInterval(cycleRef.current);
+  }, [startCycle]);
 
   const currentIdx = featuredPrizes.length ? ((tick % featuredPrizes.length) + featuredPrizes.length) % featuredPrizes.length : 0;
   const featured = featuredPrizes.length ? featuredPrizes[currentIdx] : null;
@@ -57,7 +65,10 @@ export default function Attract({ go, event, prizes = [] }) {
   const handleTouchEnd = (e) => {
     if (touchX.current === null) return;
     const diff = e.changedTouches[0].clientX - touchX.current;
-    if (Math.abs(diff) > 40) setTick(t => t + (diff < 0 ? 1 : -1));
+    if (Math.abs(diff) > 40) {
+      setTick(t => t + (diff < 0 ? 1 : -1));
+      startCycle(); // reset do timer pra dar 2.8s a partir do toque
+    }
     touchX.current = null;
   };
 
