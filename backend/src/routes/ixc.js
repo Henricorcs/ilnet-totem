@@ -139,15 +139,18 @@ router.get('/contracts/:clientId', async (req, res) => {
 
 function parseIXCDate(s) {
   if (!s) return null;
-  const onlyDate = String(s).split('T')[0].split(' ')[0];
-  let y, m, d;
-  if (onlyDate.includes('/')) {
-    [d, m, y] = onlyDate.split('/');
-  } else {
-    [y, m, d] = onlyDate.split('-');
+  const str = String(s).trim();
+  const iso = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (iso) {
+    const [, y, m, d] = iso;
+    return new Date(Number(y), Number(m) - 1, Number(d), 0, 0, 0);
   }
-  if (!y || !m || !d) return null;
-  const dt = new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}T00:00:00`);
+  const br = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (br) {
+    const [, d, m, y] = br;
+    return new Date(Number(y), Number(m) - 1, Number(d), 0, 0, 0);
+  }
+  const dt = new Date(str);
   return isNaN(dt.getTime()) ? null : dt;
 }
 
@@ -166,18 +169,36 @@ router.get('/debts/:clientId', async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const total = data.registros.length;
+    let excludedByStatus = 0, excludedByLiberado = 0, excludedByDate = 0;
+
     const debts = data.registros
-      .filter(d => !['C', 'R', 'CA'].includes(d.status) && d.liberado === 'S')
       .filter(d => {
-        const due = parseIXCDate(d.data_vencimento);
-        return due && due < today;
+        if (['C', 'R', 'CA'].includes(d.status)) { excludedByStatus++; return false; }
+        return true;
       })
-      .map(d => ({
-        id:          d.id,
-        value:       parseFloat(d.valor),
-        due_date:    String(d.data_vencimento).split('T')[0].split(' ')[0],
-        description: d.descricao || 'Fatura',
-      }));
+      .filter(d => {
+        // Permissivo: só descarta se liberado for explicitamente 'N'
+        if (d.liberado === 'N') { excludedByLiberado++; return false; }
+        return true;
+      })
+      .filter(d => {
+        const dateStr = d.data_vencimento || d.data_vencto || d.vencimento;
+        const due = parseIXCDate(dateStr);
+        if (!due || due >= today) { excludedByDate++; return false; }
+        return true;
+      })
+      .map(d => {
+        const dateStr = d.data_vencimento || d.data_vencto || d.vencimento || '';
+        return {
+          id:          d.id,
+          value:       parseFloat(d.valor),
+          due_date:    String(dateStr).split('T')[0].split(' ')[0],
+          description: d.descricao || 'Fatura',
+        };
+      });
+
+    console.log(`IXC /debts cliente=${req.params.clientId}: total=${total} status_excl=${excludedByStatus} liberado_excl=${excludedByLiberado} nao_vencidas=${excludedByDate} retornadas=${debts.length}`);
 
     return res.json({ debts });
   } catch (err) {
