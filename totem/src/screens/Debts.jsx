@@ -11,9 +11,10 @@ function fmtDate(d) {
 }
 
 export default function Debts({ session, go }) {
-  const { debts = [], clientName, contracts = [] } = session;
+  const { debts: allDebts = [], clientName, contracts = [] } = session;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const debts = allDebts.filter(d => new Date(d.due_date) < today);
   const hasDebts = debts.length > 0;
-  const overdueCount = debts.filter(d => new Date(d.due_date) < new Date()).length;
   const totalOpen = debts.reduce((sum, d) => sum + (Number(d.value) || 0), 0);
   const debtLabel = `${debts.length} fatura${debts.length > 1 ? 's' : ''}`;
   const backTo = contracts.length > 1 ? 'contract_select' : 'client_cpf';
@@ -34,11 +35,7 @@ export default function Debts({ session, go }) {
           : 'Sua conta está em dia. Sua chance na roleta está liberada.'}
         metaItems={hasDebts
           ? [
-              {
-                icon: overdueCount > 0 ? 'ti-alert-triangle' : 'ti-file-invoice',
-                label: overdueCount > 0 ? `${overdueCount} vencida${overdueCount > 1 ? 's' : ''}` : `${debtLabel} em aberto`,
-                tone: overdueCount > 0 ? 'danger' : 'warning',
-              },
+              { icon:'ti-alert-triangle', label:`${debtLabel} vencida${debts.length > 1 ? 's' : ''}`, tone:'danger' },
               { icon:'ti-cash', label:fmt(totalOpen), tone:'info' },
             ]
           : [{ icon:'ti-circle-check', label:'Conta em dia', tone:'success' }]}
@@ -49,28 +46,23 @@ export default function Debts({ session, go }) {
           display:'flex',flexDirection:'column',gap:10,marginBottom:16,
           flex:'1 1 auto',minHeight:0,overflowY:'auto',paddingRight:2,
         }}>
-          {debts.map(d => {
-            const overdue = new Date(d.due_date) < new Date();
-            return (
-              <div key={d.id} style={{
-                ...S.card,
-                borderColor: overdue ? 'rgba(204,71,71,0.40)' : C.cardBd,
-                background:  overdue ? 'rgba(204,71,71,0.04)' : '#fff',
-                display:'flex',alignItems:'center',justifyContent:'space-between',
-              }}>
-                <div>
-                  <div style={{ fontSize:13,color:C.fade,marginBottom:2 }}>{d.description}</div>
-                  <div style={{ fontSize:22,fontWeight:700,color:overdue?C.red:C.text }}>{fmt(d.value)}</div>
-                  <div style={{ fontSize:12,color:C.dim,marginTop:2 }}>Venc. {fmtDate(d.due_date)}</div>
-                </div>
-                {overdue && (
-                  <span style={{ fontSize:10,fontWeight:700,padding:'5px 10px',borderRadius:6,background:'rgba(204,71,71,0.10)',color:C.red,border:'1px solid rgba(204,71,71,0.30)',letterSpacing:'1px' }}>
-                    VENCIDA
-                  </span>
-                )}
+          {debts.map(d => (
+            <div key={d.id} style={{
+              ...S.card,
+              borderColor: 'rgba(204,71,71,0.40)',
+              background:  'rgba(204,71,71,0.04)',
+              display:'flex',alignItems:'center',justifyContent:'space-between',
+            }}>
+              <div>
+                <div style={{ fontSize:13,color:C.fade,marginBottom:2 }}>{d.description}</div>
+                <div style={{ fontSize:22,fontWeight:700,color:C.red }}>{fmt(d.value)}</div>
+                <div style={{ fontSize:12,color:C.dim,marginTop:2 }}>Venc. {fmtDate(d.due_date)}</div>
               </div>
-            );
-          })}
+              <span style={{ fontSize:10,fontWeight:700,padding:'5px 10px',borderRadius:6,background:'rgba(204,71,71,0.10)',color:C.red,border:'1px solid rgba(204,71,71,0.30)',letterSpacing:'1px' }}>
+                VENCIDA
+              </span>
+            </div>
+          ))}
         </div>
       )}
 
