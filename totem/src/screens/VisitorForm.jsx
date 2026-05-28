@@ -86,7 +86,7 @@ export default function VisitorForm({ go }) {
 
       {/* Logo */}
       <div style={{ textAlign:'center', marginTop:10 }}>
-        <img src="/assets/logo_ilnet.svg" alt="ILNET" style={{ height:40, objectFit:'contain' }}/>
+        <img src="/assets/logo_ilnet.svg" alt="ILNET" style={{ height:40, objectFit:'contain', animation:'floatLogo 5s ease-in-out infinite' }}/>
       </div>
 
       {/* Progress bar */}
@@ -99,6 +99,8 @@ export default function VisitorForm({ go }) {
           }}/>
         ))}
       </div>
+
+      <style>{`@keyframes floatLogo{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}`}</style>
 
       {/* Step content */}
       {stepKey === 'cpf' && (

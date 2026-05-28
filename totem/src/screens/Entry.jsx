@@ -12,7 +12,7 @@ export default function Entry({ go, goHome, event }) {
 
       <div style={{ flex:1,display:'flex',flexDirection:'column',justifyContent:'center',gap:36 }}>
         <div style={{ textAlign:'center' }}>
-          <img src="/assets/logo_ilnet.svg" alt="ILNET" style={{ width:'85%', maxWidth:380, height:'auto', marginBottom:20, objectFit:'contain' }}/>
+          <img src="/assets/logo_ilnet.svg" alt="ILNET" style={{ width:'85%', maxWidth:380, height:'auto', marginBottom:20, objectFit:'contain', animation:'floatLogo 5s ease-in-out infinite' }}/>
           {event && <div style={{ fontSize:14,color:C.fade,marginBottom:10,fontWeight:600,letterSpacing:'1px' }}>{event.name}</div>}
           <h1 style={{ fontSize:32,fontWeight:700,color:C.text,lineHeight:1.15 }}>
             Você já é cliente<br/>
@@ -54,6 +54,7 @@ export default function Entry({ go, goHome, event }) {
           </button>
         </div>
       </div>
+      <style>{`@keyframes floatLogo{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}`}</style>
     </div>
   );
 }
