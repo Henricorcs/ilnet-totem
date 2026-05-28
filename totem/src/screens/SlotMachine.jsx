@@ -4,7 +4,7 @@ import { C, S } from '../theme.js';
 import { ClientPill } from '../components/ClientIdentity.jsx';
 
 const API_URL = () => window.__API_URL__ || 'http://localhost:3001';
-const SH = 155;
+const SH = 190;
 const IMG_SIZE = Math.round(SH * 0.7); // fixo — não muda durante o giro
 
 function resolveImg(image_url) {
@@ -223,15 +223,15 @@ export default function SlotMachine({ session, go, prizes }) {
         </div>
       </div>
 
-      <div style={{ textAlign:'center',marginTop:6 }}>
+      <div style={{ textAlign:'center',marginTop:2 }}>
         {name && (
-          <div style={{ display:'flex',justifyContent:'center',marginBottom:10 }}>
+          <div style={{ display:'flex',justifyContent:'center',marginBottom:6 }}>
             <ClientPill clientName={participantName} label={participantLabel} />
           </div>
         )}
         <div style={S.stepLabel}>PASSO 4 DE 4</div>
         <h1 style={{
-          fontSize:30,fontWeight:900,marginTop:6,
+          fontSize:26,fontWeight:900,marginTop:4,
           background: C.gradText,
           WebkitBackgroundClip:'text',backgroundClip:'text',
           WebkitTextFillColor:'transparent',
@@ -242,7 +242,7 @@ export default function SlotMachine({ session, go, prizes }) {
 
       {/* Máquina de cassino */}
       <div style={{
-        marginTop:18,
+        marginTop:8,
         flex:1,
         display:'flex',
         flexDirection:'column',
@@ -262,7 +262,7 @@ export default function SlotMachine({ session, go, prizes }) {
             inset 0 -8px 18px rgba(0,0,0,0.4)
           `,
           width:'100%',
-          maxWidth: 520,
+          maxWidth: 620,
         }}>
           {/* Marquise topo */}
           <div style={{
