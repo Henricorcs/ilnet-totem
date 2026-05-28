@@ -15,7 +15,8 @@ export default function Won({ session, goHome }) {
     <div style={{
       ...S.screen,
       alignItems:'center',
-      background:'radial-gradient(ellipse 100% 60% at 50% 25%,#fff8e6 0%,#fff 55%,#eaf2fb 100%)',
+      justifyContent:'center',
+      background:'radial-gradient(ellipse 100% 60% at 50% 25%,#eaf5ff 0%,#fff 55%,#eaf2fb 100%)',
     }}>
       {/* Confete */}
       <svg style={{ position:'absolute',inset:0,width:'100%',height:'100%',pointerEvents:'none' }} aria-hidden="true">
@@ -40,64 +41,64 @@ export default function Won({ session, goHome }) {
         <i className="ti ti-x" aria-hidden="true"/>
       </button>
 
-      <div style={{ textAlign:'center',zIndex:2,marginTop:20 }}>
-        <div style={{ fontSize:13,color:C.gold,letterSpacing:'4px',fontWeight:800,marginBottom:8 }}>
+      <div style={{ textAlign:'center',zIndex:2,marginBottom:8 }}>
+        <div style={{ fontSize:15,color:C.blue,letterSpacing:'5px',fontWeight:800,marginBottom:10 }}>
           ★ PARABÉNS ★
         </div>
         <h1 style={{
-          fontSize:36,fontWeight:900,
-          background:'linear-gradient(135deg,#C7861A 0%,#E0A52F 50%,#A66614 100%)',
+          fontSize:44,fontWeight:900,
+          background: C.gradText,
           WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text',
-          marginBottom:24,
+          marginBottom:0,
         }}>Você ganhou!</h1>
       </div>
 
-      <div style={{ textAlign:'center',zIndex:2,marginBottom:24,animation:'bounce 2s ease-in-out infinite' }}>
+      <div style={{ textAlign:'center',zIndex:2,marginBottom:20,animation:'bounce 2s ease-in-out infinite' }}>
         <div style={{
-          width:140,height:140,margin:'0 auto',borderRadius:'50%',
-          background:'radial-gradient(circle, rgba(199,134,26,0.20),rgba(199,134,26,0.04))',
-          border:`2px solid rgba(199,134,26,0.55)`,
+          width:180,height:180,margin:'0 auto',borderRadius:'50%',
+          background:'radial-gradient(circle, rgba(91,197,245,0.25), rgba(30,124,216,0.06))',
+          border:`3px solid rgba(30,124,216,0.55)`,
           display:'flex',alignItems:'center',justifyContent:'center',
-          boxShadow:'0 16px 40px rgba(199,134,26,0.25)',
+          boxShadow:'0 16px 40px rgba(30,124,216,0.25), 0 0 0 6px rgba(91,197,245,0.15)',
         }}>
           {prize?.image_url ? (
             <img src={API_URL() + prize.image_url} alt={prize.name}
-              style={{ width:96,height:96,objectFit:'contain' }}/>
+              style={{ width:120,height:120,objectFit:'contain' }}/>
           ) : (
-            <i className="ti ti-gift" style={{fontSize:68,color:C.gold}} aria-hidden="true"/>
+            <i className="ti ti-gift" style={{fontSize:80,color:C.blue}} aria-hidden="true"/>
           )}
         </div>
-        <div style={{ fontSize:20,fontWeight:800,marginTop:16,color:C.text }}>
+        <div style={{ fontSize:24,fontWeight:800,marginTop:16,color:C.text }}>
           {prize?.name || 'Prêmio'}
         </div>
       </div>
 
       <div style={{
-        ...S.card, width:'100%', maxWidth:320, textAlign:'center',
+        ...S.card, width:'100%', maxWidth:340, textAlign:'center',
         marginBottom:14, zIndex:2,
-        border:`1.5px solid rgba(199,134,26,0.40)`,
-        background:'#fffaf0',
+        border:`1.5px solid rgba(30,124,216,0.35)`,
+        background:'#f0f8ff',
       }}>
-        <div style={{ fontSize:11,color:C.gold,letterSpacing:'2px',marginBottom:8,fontWeight:700 }}>
+        <div style={{ fontSize:14,color:C.blue,letterSpacing:'2px',marginBottom:8,fontWeight:700 }}>
           SEU CÓDIGO DE RETIRADA
         </div>
-        <div style={{ fontFamily:'monospace',fontSize:44,fontWeight:900,letterSpacing:10,color:C.blueDark }}>
+        <div style={{ fontFamily:'monospace',fontSize:50,fontWeight:900,letterSpacing:10,color:C.blueDark }}>
           {winCode}
         </div>
       </div>
 
       <div style={{
         display:'flex',alignItems:'flex-start',gap:10,padding:'12px 16px',
-        background:'rgba(199,134,26,0.08)',borderRadius:12,width:'100%',maxWidth:320,zIndex:2,
-        marginBottom:'auto', border:'1px solid rgba(199,134,26,0.25)',
+        background:'rgba(30,124,216,0.07)',borderRadius:12,width:'100%',maxWidth:340,zIndex:2,
+        marginBottom:16, border:'1px solid rgba(30,124,216,0.20)',
       }}>
-        <i className="ti ti-info-circle" style={{fontSize:18,color:C.gold,flexShrink:0,marginTop:1}} aria-hidden="true"/>
-        <span style={{ fontSize:13,color:C.textSub,lineHeight:1.45 }}>
+        <i className="ti ti-info-circle" style={{fontSize:18,color:C.blue,flexShrink:0,marginTop:1}} aria-hidden="true"/>
+        <span style={{ fontSize:16,color:C.textSub,lineHeight:1.45 }}>
           Mostre este código no estande pra retirar seu prêmio
         </span>
       </div>
 
-      <button style={{ ...S.btnPrimary, marginTop:18, zIndex:2 }} onClick={goHome}>
+      <button style={{ ...S.btnPrimary, zIndex:2, maxWidth:340, width:'100%' }} onClick={goHome}>
         <i className="ti ti-check" style={{fontSize:22}} aria-hidden="true"/>Finalizar
       </button>
 

@@ -69,16 +69,19 @@ export default function App() {
 
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden', background: '#f4f8fc' }}>
-      {screen === 'attract'         && <Attract         {...props} />}
-      {screen === 'entry'           && <Entry           {...props} />}
-      {screen === 'client_cpf'      && <ClientCPF       {...props} />}
-      {screen === 'contract_select' && <ContractSelect  {...props} />}
-      {screen === 'debts'           && <Debts           {...props} />}
-      {screen === 'pix'             && <Pix             {...props} />}
-      {screen === 'visitor_form'    && <VisitorForm      {...props} />}
-      {screen === 'slot'            && <SlotMachine      {...props} />}
-      {screen === 'won'             && <Won             {...props} />}
-      {screen === 'lost'            && <Lost            {...props} />}
+      <style>{`@keyframes screenEnter{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}`}</style>
+      <div key={screen} style={{ position:'absolute', inset:0, animation:'screenEnter 0.30s cubic-bezier(0.22,1,0.36,1)' }}>
+        {screen === 'attract'         && <Attract         {...props} />}
+        {screen === 'entry'           && <Entry           {...props} />}
+        {screen === 'client_cpf'      && <ClientCPF       {...props} />}
+        {screen === 'contract_select' && <ContractSelect  {...props} />}
+        {screen === 'debts'           && <Debts           {...props} />}
+        {screen === 'pix'             && <Pix             {...props} />}
+        {screen === 'visitor_form'    && <VisitorForm      {...props} />}
+        {screen === 'slot'            && <SlotMachine      {...props} />}
+        {screen === 'won'             && <Won             {...props} />}
+        {screen === 'lost'            && <Lost            {...props} />}
+      </div>
     </div>
   );
 }
