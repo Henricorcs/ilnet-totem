@@ -246,11 +246,13 @@ router.get('/debts/:id', async (req, res) => {
       })
       .map(d => {
         const dateStr = d.data_vencimento || d.data_vencto || d.vencimento || '';
+        const ct = d.id_contrato;
         return {
           id:          d.id,
           value:       parseFloat(d.valor),
           due_date:    String(dateStr).split('T')[0].split(' ')[0],
           description: d.descricao || 'Fatura',
+          contract_id: ct && String(ct) !== '0' ? String(ct) : null,
         };
       });
 

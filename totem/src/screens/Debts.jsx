@@ -11,9 +11,14 @@ function fmtDate(d) {
 }
 
 export default function Debts({ session, go }) {
-  const { debts: allDebts = [], clientName, contracts = [] } = session;
+  const { debts: allDebts = [], clientName, contracts = [], contractId } = session;
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  const debts = allDebts.filter(d => new Date(d.due_date) < today);
+  const debts = allDebts.filter(d => {
+    if (new Date(d.due_date) >= today) return false;
+    // Mantém faturas do contrato escolhido + orfas (sem contract_id)
+    if (contractId && d.contract_id && String(d.contract_id) !== String(contractId)) return false;
+    return true;
+  });
   const hasDebts = debts.length > 0;
   const totalOpen = debts.reduce((sum, d) => sum + (Number(d.value) || 0), 0);
   const debtLabel = `${debts.length} fatura${debts.length > 1 ? 's' : ''}`;
