@@ -193,6 +193,29 @@ router.get('/debts/:id', async (req, res) => {
     const merged = new Map();
     for (const r of (byClient.registros || []))   merged.set(r.id, r);
     for (const r of (byContract.registros || [])) merged.set(r.id, r);
+
+    // Defesa contra totem antigo: se o id passado era contrato, descobre o
+    // id_cliente real dos registros achados e refaz a busca pra capturar
+    // faturas orfas (sem id_contrato atual).
+    const realClientIds = new Set();
+    for (const r of merged.values()) {
+      if (r.id_cliente && String(r.id_cliente) !== String(id)) {
+        realClientIds.add(String(r.id_cliente));
+      }
+    }
+    if (realClientIds.size > 0) {
+      const extras = await Promise.all([...realClientIds].map(cid =>
+        listIXC('fn_areceber', {
+          qtype: 'fn_areceber.id_cliente',
+          query: cid, rp: '100', sortname: 'fn_areceber.data_vencimento',
+        }).catch(() => ({ registros: [] }))
+      ));
+      for (const ex of extras) {
+        for (const r of (ex.registros || [])) merged.set(r.id, r);
+      }
+      console.log(`IXC /debts id=${id} cruzou cliente_ids=[${[...realClientIds].join(',')}] total_apos_cruzamento=${merged.size}`);
+    }
+
     const registros = [...merged.values()];
 
     if (registros.length === 0) {
