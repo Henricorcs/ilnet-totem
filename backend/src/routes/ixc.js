@@ -164,12 +164,18 @@ router.get('/debts/:clientId', async (req, res) => {
       sortname: 'fn_areceber.data_vencimento',
     });
 
-    if (!data.registros) return res.json({ debts: [] });
+    if (!data.registros) {
+      console.log(`IXC /debts cliente=${req.params.clientId}: registros=null total=${data.total||0}`);
+      return res.json({ debts: [] });
+    }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     const total = data.registros.length;
+    if (total > 0) {
+      console.log(`IXC /debts cliente=${req.params.clientId} registro[0]=`, JSON.stringify(data.registros[0]).slice(0, 800));
+    }
     let excludedByStatus = 0, excludedByLiberado = 0, excludedByDate = 0;
 
     const debts = data.registros
