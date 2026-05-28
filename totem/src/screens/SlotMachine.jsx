@@ -13,22 +13,18 @@ function resolveImg(image_url) {
   return API_URL() + image_url;
 }
 
-// Um reel: lista de símbolos que flipa rapidamente
+// Um reel: rola suavemente a cada tick
 function Reel({ prizes, currentIdx, spinning, stopped }) {
-  const prev = (currentIdx - 1 + prizes.length) % prizes.length;
-  const next = (currentIdx + 1) % prizes.length;
+  const len = prizes.length || 1;
+  const get = (off) => prizes[((currentIdx + off) % len + len) % len];
 
   const Symbol = ({ p, scale = 1, opacity = 1 }) => {
     const src = resolveImg(p?.image_url);
     return (
-      <div style={{
-        height:SH,
-        display:'flex',alignItems:'center',justifyContent:'center',
-        flexShrink:0,
-      }}>
+      <div style={{ height:SH, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
         <div style={{
           width:IMG_SIZE, height:IMG_SIZE,
-          display:'flex',alignItems:'center',justifyContent:'center',
+          display:'flex', alignItems:'center', justifyContent:'center',
           transform:`scale(${scale})`,
           transformOrigin:'center center',
           transition:'transform .15s ease',
@@ -36,24 +32,12 @@ function Reel({ prizes, currentIdx, spinning, stopped }) {
           willChange:'transform, opacity',
         }}>
           {src ? (
-            <img
-              src={src}
-              alt={p.name}
-              draggable={false}
-              decoding="sync"
-              loading="eager"
-              style={{
-                width:IMG_SIZE, height:IMG_SIZE,
-                objectFit:'contain',
-                imageRendering:'auto',
-                pointerEvents:'none',
-                userSelect:'none',
-                /* Filtro pra PNG transparente ficar visível sobre fundo escuro */
-                filter:'drop-shadow(0 2px 4px rgba(0,0,0,0.45))',
-              }}
+            <img src={src} alt={p.name} draggable={false} decoding="sync" loading="eager"
+              style={{ width:IMG_SIZE, height:IMG_SIZE, objectFit:'contain', pointerEvents:'none', userSelect:'none',
+                filter:'drop-shadow(0 2px 4px rgba(0,0,0,0.45))' }}
             />
           ) : (
-            <i className="ti ti-gift" style={{ fontSize:IMG_SIZE*0.78, color:C.gold }} aria-hidden="true"/>
+            <i className="ti ti-gift" style={{ fontSize:IMG_SIZE*0.78, color:C.blue }} aria-hidden="true"/>
           )}
         </div>
       </div>
@@ -62,37 +46,43 @@ function Reel({ prizes, currentIdx, spinning, stopped }) {
 
   return (
     <div style={{
-      width:SH,height:SH*3,overflow:'hidden',position:'relative',
-      background:'linear-gradient(180deg,#070d20 0%,#0e1b3d 30%,#142853 50%,#0e1b3d 70%,#070d20 100%)',
-      border:`2px solid ${stopped ? '#FFD774' : 'rgba(255,201,87,0.35)'}`,
+      width:SH, height:SH*3, overflow:'hidden', position:'relative',
+      background:'linear-gradient(180deg,#040d22 0%,#071636 30%,#0a1e48 50%,#071636 70%,#040d22 100%)',
+      border:`2px solid ${stopped ? '#5BC5F5' : 'rgba(30,124,216,0.45)'}`,
       borderRadius:14,
-      transition:'all .3s',
+      transition:'border-color 0.35s, box-shadow 0.35s',
       boxShadow: stopped
-        ? '0 0 22px rgba(255,201,87,0.55), inset 0 0 16px rgba(255,201,87,0.2)'
+        ? '0 0 22px rgba(91,197,245,0.60), inset 0 0 16px rgba(91,197,245,0.20)'
         : 'inset 0 0 18px rgba(0,0,0,0.55), 0 6px 18px rgba(0,0,0,0.4)',
     }}>
       {/* Reflexo de vidro */}
-      <div style={{
-        position:'absolute',inset:0,
-        background:'linear-gradient(90deg, rgba(255,255,255,0.08) 0%, transparent 30%, transparent 70%, rgba(255,255,255,0.05) 100%)',
-        zIndex:3, pointerEvents:'none',
+      <div style={{ position:'absolute',inset:0, zIndex:3, pointerEvents:'none',
+        background:'linear-gradient(90deg, rgba(255,255,255,0.08) 0%, transparent 30%, transparent 70%, rgba(255,255,255,0.05) 100%)'
       }}/>
       {/* Fade topo/fundo */}
-      <div style={{ position:'absolute',top:0,left:0,right:0,height:SH,background:'linear-gradient(to bottom,rgba(7,13,32,0.95) 0%,transparent 100%)',zIndex:2,pointerEvents:'none' }}/>
-      <div style={{ position:'absolute',bottom:0,left:0,right:0,height:SH,background:'linear-gradient(to top,rgba(7,13,32,0.95) 0%,transparent 100%)',zIndex:2,pointerEvents:'none' }}/>
-      {/* Linha central com brilho */}
+      <div style={{ position:'absolute',top:0,left:0,right:0,height:SH,zIndex:2,pointerEvents:'none',
+        background:'linear-gradient(to bottom,rgba(4,13,34,0.96) 0%,transparent 100%)' }}/>
+      <div style={{ position:'absolute',bottom:0,left:0,right:0,height:SH,zIndex:2,pointerEvents:'none',
+        background:'linear-gradient(to top,rgba(4,13,34,0.96) 0%,transparent 100%)' }}/>
+      {/* Linha central */}
       <div style={{
-        position:'absolute',top:SH,left:0,right:0,height:SH,
-        borderTop:`1px solid ${stopped ? 'rgba(255,215,116,0.5)' : 'rgba(255,201,87,0.25)'}`,
-        borderBottom:`1px solid ${stopped ? 'rgba(255,215,116,0.5)' : 'rgba(255,201,87,0.25)'}`,
-        background: stopped ? 'rgba(255,201,87,0.06)' : 'transparent',
-        zIndex:1, pointerEvents:'none',
-        transition:'all .3s',
+        position:'absolute',top:SH,left:0,right:0,height:SH,zIndex:1,pointerEvents:'none',
+        borderTop:`1px solid ${stopped ? 'rgba(91,197,245,0.55)' : 'rgba(30,124,216,0.25)'}`,
+        borderBottom:`1px solid ${stopped ? 'rgba(91,197,245,0.55)' : 'rgba(30,124,216,0.25)'}`,
+        background: stopped ? 'rgba(91,197,245,0.07)' : 'transparent',
+        transition:'all 0.35s',
       }}/>
 
-      <Symbol p={prizes[prev]} scale={0.7} opacity={0.35}/>
-      <Symbol p={prizes[currentIdx]} scale={1.05} opacity={1}/>
-      <Symbol p={prizes[next]} scale={0.7} opacity={0.35}/>
+      {/* Strip animada: ao girar, rola para cima a cada tick */}
+      <div
+        key={spinning ? currentIdx : 'stopped'}
+        style={{ animation: spinning ? 'reelScroll 80ms linear forwards' : 'none' }}
+      >
+        <Symbol p={get(-1)} scale={0.7}  opacity={0.35}/>
+        <Symbol p={get(0)}  scale={1.05} opacity={1}/>
+        <Symbol p={get(1)}  scale={0.7}  opacity={0.35}/>
+        <Symbol p={get(2)}  scale={0.5}  opacity={0.15}/>
+      </div>
     </div>
   );
 }
@@ -102,7 +92,7 @@ function MarqueeLights({ count = 9, spinning, win }) {
   return (
     <div style={{ display:'flex',justifyContent:'space-between',gap:4,width:'100%' }}>
       {[...Array(count)].map((_,i) => {
-        const color = win ? '#FFD774' : (spinning ? (i%2 ? '#FFC957' : '#5BC5F5') : C.cardBd);
+        const color = win ? '#5BC5F5' : (spinning ? (i%2 ? '#5BC5F5' : '#1E7CD8') : C.cardBd);
         return (
           <span key={i} style={{
             width:9,height:9,borderRadius:'50%',
@@ -223,11 +213,11 @@ export default function SlotMachine({ session, go, prizes }) {
       {/* Header */}
       <div style={{ display:'flex',justifyContent:'flex-end',alignItems:'center' }}>
         <div style={{
-          display:'flex',alignItems:'center',gap:8,fontSize:13,color:C.gold,fontWeight:700,
+          display:'flex',alignItems:'center',gap:8,fontSize:13,color:C.blue,fontWeight:700,
           padding:'8px 14px',borderRadius:999,
           background:'#fff',
-          border:`1.5px solid rgba(199,134,26,0.40)`,
-          boxShadow:'0 4px 14px rgba(199,134,26,0.15)',
+          border:`1.5px solid rgba(30,124,216,0.40)`,
+          boxShadow:'0 4px 14px rgba(30,124,216,0.15)',
         }}>
           <i className="ti ti-ticket" style={{fontSize:15}} aria-hidden="true"/>1 chance
         </div>
@@ -242,7 +232,7 @@ export default function SlotMachine({ session, go, prizes }) {
         <div style={S.stepLabel}>PASSO 4 DE 4</div>
         <h1 style={{
           fontSize:30,fontWeight:900,marginTop:6,
-          background:'linear-gradient(135deg,#E0A52F 0%,#C7861A 50%,#9B6614 100%)',
+          background: C.gradText,
           WebkitBackgroundClip:'text',backgroundClip:'text',
           WebkitTextFillColor:'transparent',
           letterSpacing:'2px',
@@ -263,11 +253,11 @@ export default function SlotMachine({ session, go, prizes }) {
           position:'relative',
           padding:'18px 14px 14px',
           borderRadius:24,
-          background:'linear-gradient(180deg,#1a1024 0%,#1f1530 100%)',
-          border:'2px solid rgba(255,201,87,0.45)',
+          background:'linear-gradient(180deg,#040d22 0%,#071a40 100%)',
+          border:'2px solid rgba(30,124,216,0.55)',
           boxShadow:`
             0 24px 60px rgba(0,0,0,0.55),
-            0 0 28px rgba(255,201,87,0.18),
+            0 0 28px rgba(30,124,216,0.28),
             inset 0 1px 0 rgba(255,255,255,0.08),
             inset 0 -8px 18px rgba(0,0,0,0.4)
           `,
@@ -279,8 +269,8 @@ export default function SlotMachine({ session, go, prizes }) {
             position:'absolute', top:-14, left:'50%', transform:'translateX(-50%)',
             padding:'4px 18px',
             borderRadius:14,
-            background:'linear-gradient(180deg,#FFD774 0%,#E8A82F 100%)',
-            color:'#3a2200',
+            background:'linear-gradient(180deg,#5BC5F5 0%,#1E7CD8 100%)',
+            color:'#fff',
             fontSize:10, fontWeight:800, letterSpacing:'3px',
             boxShadow:'0 4px 14px rgba(255,201,87,0.45)',
             whiteSpace:'nowrap',
@@ -298,8 +288,8 @@ export default function SlotMachine({ session, go, prizes }) {
             display:'flex',justifyContent:'center',gap:8,
             padding:10,
             borderRadius:14,
-            background:'linear-gradient(180deg,#04060f 0%,#0a1224 100%)',
-            border:'1px solid rgba(255,201,87,0.25)',
+            background:'linear-gradient(180deg,#04060f 0%,#071224 100%)',
+            border:'1px solid rgba(30,124,216,0.30)',
             boxShadow:'inset 0 2px 10px rgba(0,0,0,0.7)',
           }}>
             {[0,1,2].map(r => (
@@ -316,7 +306,7 @@ export default function SlotMachine({ session, go, prizes }) {
           {/* Linha indicadora */}
           <div style={{
             display:'flex',justifyContent:'center',alignItems:'center',gap:6,
-            marginTop:6,fontSize:9,color:C.gold,letterSpacing:'2px',opacity:.7,
+            marginTop:6,fontSize:9,color:C.blueLight,letterSpacing:'2px',opacity:.8,
           }}>
             <i className="ti ti-chevron-right" style={{ fontSize:10 }}/>
             LINHA DA SORTE
@@ -363,8 +353,8 @@ export default function SlotMachine({ session, go, prizes }) {
           marginTop:14,
           background: spinning
             ? 'linear-gradient(135deg,#777 0%,#444 100%)'
-            : 'linear-gradient(135deg,#FFD774 0%,#FFC957 40%,#E8A82F 100%)',
-          color: spinning ? '#fff' : '#3a2200',
+            : C.gradBlue,
+          color: '#fff',
           fontWeight:800,
           letterSpacing:'1.5px',
           fontSize:17,
@@ -372,7 +362,7 @@ export default function SlotMachine({ session, go, prizes }) {
           borderRadius:18,
           boxShadow: spinning
             ? 'none'
-            : '0 14px 32px rgba(255,201,87,0.5), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -3px 0 rgba(0,0,0,0.15)',
+            : '0 14px 32px rgba(30,124,216,0.50), inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -3px 0 rgba(0,0,0,0.15)',
           opacity: spinning || !prizes.length || !imgsReady ? 0.75 : 1,
           cursor:  spinning || !imgsReady ? 'not-allowed' : 'pointer',
           textTransform:'uppercase',
@@ -392,6 +382,7 @@ export default function SlotMachine({ session, go, prizes }) {
       <style>{`
         @keyframes spin{to{transform:rotate(360deg)}}
         @keyframes marqueeBlink{from{opacity:.35;transform:scale(.85)}to{opacity:1;transform:scale(1.15)}}
+        @keyframes reelScroll{from{transform:translateY(0)}to{transform:translateY(-${SH}px)}}
       `}</style>
     </div>
   );

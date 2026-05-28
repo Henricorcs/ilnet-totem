@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { C } from '../theme.js';
 
 const LOGO_SRC = '/assets/logo_ilnet.svg';
@@ -34,9 +34,10 @@ function Particles() {
 }
 
 export default function Attract({ go, event, prizes = [] }) {
-  const featuredPrizes = prizes.slice(0, 4);
+  const featuredPrizes = prizes;
   const [time, setTime] = useState(new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));
   const [tick, setTick] = useState(0);
+  const touchX = useRef(null);
 
   useEffect(() => {
     const id = setInterval(() => setTime(new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})), 30000);
@@ -49,7 +50,16 @@ export default function Attract({ go, event, prizes = [] }) {
     return () => clearInterval(id);
   }, [featuredPrizes.length]);
 
-  const featured = featuredPrizes.length ? featuredPrizes[tick % featuredPrizes.length] : null;
+  const currentIdx = featuredPrizes.length ? ((tick % featuredPrizes.length) + featuredPrizes.length) % featuredPrizes.length : 0;
+  const featured = featuredPrizes.length ? featuredPrizes[currentIdx] : null;
+
+  const handleTouchStart = (e) => { touchX.current = e.touches[0].clientX; };
+  const handleTouchEnd = (e) => {
+    if (touchX.current === null) return;
+    const diff = e.changedTouches[0].clientX - touchX.current;
+    if (Math.abs(diff) > 40) setTick(t => t + (diff < 0 ? 1 : -1));
+    touchX.current = null;
+  };
 
   return (
     <div style={{
@@ -112,7 +122,7 @@ export default function Attract({ go, event, prizes = [] }) {
       {/* Carrossel de prêmios */}
       <div style={{ zIndex:2, width:'100%', display:'flex', flexDirection:'column', alignItems:'center', gap:12 }}>
         {featured ? (
-          <div key={featured.id} style={{
+          <div key={featured.id} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{
             display:'flex',alignItems:'center',gap:16,
             padding:'14px 20px',
             background:'#fff',
@@ -153,7 +163,7 @@ export default function Attract({ go, event, prizes = [] }) {
             {featuredPrizes.map((_,i) => (
               <span key={i} style={{
                 width:7,height:7,borderRadius:'50%',
-                background: i === (tick % featuredPrizes.length) ? C.blue : 'rgba(30,124,216,0.25)',
+                background: i === currentIdx ? C.blue : 'rgba(30,124,216,0.25)',
                 transition:'background .3s',
               }}/>
             ))}

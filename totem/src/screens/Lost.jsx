@@ -22,11 +22,7 @@ export default function Lost({ goHome }) {
         <div style={{ fontSize:84, lineHeight:1 }}>😅</div>
 
         <div>
-          <div style={{ fontSize:12, color:C.fade, letterSpacing:'3px', marginBottom:10, fontWeight:700 }}>QUASE LÁ</div>
-          <h1 style={{ fontSize:30, fontWeight:800, color:C.text }}>Que pena desta vez!</h1>
-          <p style={{ fontSize:15, color:C.dim, marginTop:10, lineHeight:1.5, maxWidth:300 }}>
-            Você chegou perto — talvez no próximo evento a sorte venha junto.
-          </p>
+          <h1 style={{ fontSize:30, fontWeight:800, color:C.text }}>Não foi dessa vez</h1>
         </div>
 
         <div style={{

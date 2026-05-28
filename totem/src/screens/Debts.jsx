@@ -30,7 +30,7 @@ export default function Debts({ session, go }) {
       <ClientIdentity
         clientName={clientName}
         description={hasDebts
-          ? 'Encontramos pendências neste contrato. Regularize para liberar sua chance na roleta.'
+          ? 'Encontramos pendências neste contrato. Você pode regularizar agora ou jogar mesmo assim!'
           : 'Sua conta está em dia. Sua chance na roleta está liberada.'}
         metaItems={hasDebts
           ? [
@@ -84,9 +84,13 @@ export default function Debts({ session, go }) {
               <i className="ti ti-qrcode" style={{fontSize:24}} aria-hidden="true"/>
               Pagar agora via PIX
             </button>
-            <div style={{ textAlign:'center',fontSize:13,color:C.dim }}>
-              Pague pra participar da roleta
-            </div>
+            <button
+              style={S.btnGhost}
+              onClick={() => go('slot')}
+            >
+              <i className="ti ti-confetti" style={{fontSize:22}} aria-hidden="true"/>
+              Jogar mesmo assim
+            </button>
           </>
         ) : (
           <button style={S.btnPrimary} onClick={() => go('slot')}>
