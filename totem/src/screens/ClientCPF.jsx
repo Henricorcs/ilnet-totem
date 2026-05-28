@@ -35,25 +35,34 @@ export default function ClientCPF({ go }) {
       const client  = res.clients[0];
       const eventId = check.event_id;
 
-      const cRes = await api.getContracts(client.id);
+      const [cRes, dRes] = await Promise.all([
+        api.getContracts(client.id),
+        api.getDebts(client.id),
+      ]);
       const allContracts = cRes.contracts || [];
       const contracts = allContracts.filter(c => c.status === 'A');
+      const debts = dRes.debts || [];
 
-      if (contracts.length === 0) {
-        return setError('Nenhum contrato ativo encontrado. Volte e cadastre-se como visitante.');
+      if (contracts.length === 0 && debts.length === 0) {
+        return setError('Nenhum contrato ativo ou fatura vencida.\nVolte e cadastre-se como visitante.');
       }
 
       if (contracts.length > 1) {
         go('contract_select', {
           cpf: digits, clientName: client.name, clientId: client.id,
-          contracts, eventId,
+          contracts, debts, eventId,
         });
       } else {
-        await api.registerClient({ cpf: digits, name: client.name, ixcClientId: client.id, ixcContractId: contracts[0]?.id });
-        const dRes = await api.getDebts(contracts[0]?.id);
+        const contract = contracts[0] || null;
+        await api.registerClient({
+          cpf: digits, name: client.name,
+          ixcClientId: client.id,
+          ixcContractId: contract?.id || null,
+        });
         go('debts', {
           cpf: digits, clientName: client.name, clientId: client.id,
-          contractId: contracts[0]?.id, debts: dRes.debts || [], eventId,
+          contractId: contract?.id || null, contracts,
+          debts, eventId,
         });
       }
     } catch (e) {

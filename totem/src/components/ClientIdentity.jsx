@@ -123,7 +123,7 @@ export function ClientIdentity({
       {metaItems.length > 0 && (
         <div style={{
           display:'flex',justifyContent:'center',gap:8,flexWrap:'wrap',
-          marginTop:14,
+          marginTop:14, width:'100%', maxWidth:'100%',
         }}>
           {metaItems.map((item) => {
             const t = toneFor(item.tone);
@@ -134,11 +134,13 @@ export function ClientIdentity({
                   display:'inline-flex',alignItems:'center',gap:6,
                   padding:'8px 12px',borderRadius:999,
                   background:t.bg,border:`1px solid ${t.border}`,
-                  color:t.color,fontSize:13,fontWeight:700,lineHeight:1.1,
+                  color:t.color,fontSize:13,fontWeight:700,lineHeight:1.15,
+                  maxWidth:'100%', minWidth:0,
+                  overflowWrap:'anywhere', wordBreak:'break-word',
                 }}
               >
-                <i className={`ti ${item.icon || t.icon}`} style={{fontSize:16}} aria-hidden="true"/>
-                {item.label}
+                <i className={`ti ${item.icon || t.icon}`} style={{fontSize:16,flexShrink:0}} aria-hidden="true"/>
+                <span style={{minWidth:0}}>{item.label}</span>
               </span>
             );
           })}

@@ -18,8 +18,7 @@ export default function ContractSelect({ session, go }) {
     setLoading(true);
     try {
       await api.registerClient({ cpf, name: clientName, ixcClientId: clientId, ixcContractId: contract.id });
-      const dRes = await api.getDebts(contract.id);
-      go('debts', { ...session, contractId: contract.id, debts: dRes.debts || [] });
+      go('debts', { ...session, contractId: contract.id });
     } catch (e) {
       console.error(e);
     } finally {

@@ -137,24 +137,45 @@ router.get('/contracts/:clientId', async (req, res) => {
   }
 });
 
-// Débitos em aberto de um contrato
-router.get('/debts/:contractId', async (req, res) => {
+function parseIXCDate(s) {
+  if (!s) return null;
+  const onlyDate = String(s).split('T')[0].split(' ')[0];
+  let y, m, d;
+  if (onlyDate.includes('/')) {
+    [d, m, y] = onlyDate.split('/');
+  } else {
+    [y, m, d] = onlyDate.split('-');
+  }
+  if (!y || !m || !d) return null;
+  const dt = new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}T00:00:00`);
+  return isNaN(dt.getTime()) ? null : dt;
+}
+
+// Débitos em aberto e VENCIDOS de um cliente (independente de contrato)
+router.get('/debts/:clientId', async (req, res) => {
   try {
     const data = await listIXC('fn_areceber', {
-      qtype: 'fn_areceber.id_contrato',
-      query: req.params.contractId,
-      rp: '50',
+      qtype: 'fn_areceber.id_cliente',
+      query: req.params.clientId,
+      rp: '100',
       sortname: 'fn_areceber.data_vencimento',
     });
 
     if (!data.registros) return res.json({ debts: [] });
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const debts = data.registros
       .filter(d => !['C', 'R', 'CA'].includes(d.status) && d.liberado === 'S')
+      .filter(d => {
+        const due = parseIXCDate(d.data_vencimento);
+        return due && due < today;
+      })
       .map(d => ({
         id:          d.id,
         value:       parseFloat(d.valor),
-        due_date:    d.data_vencimento,
+        due_date:    String(d.data_vencimento).split('T')[0].split(' ')[0],
         description: d.descricao || 'Fatura',
       }));
 
@@ -176,11 +197,35 @@ router.post('/pix', async (req, res) => {
       headers: hdr(),
       body:    JSON.stringify({ id_areceber: debtId }),
     });
-    const data = await r.json();
+    const text = await r.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = {}; }
+
+    // IXC retorna a chave em vários formatos dependendo da versão/configuração
+    const pixCode =
+      data.pix_copia_cola ||
+      data.pixCopiaECola  ||
+      data.pix_copia_e_cola ||
+      data.brcode         ||
+      data.qrcode         ||
+      data.qr_code        ||
+      data.pix?.pixCopiaECola ||
+      data.pix?.pix_copia_cola ||
+      data.pix?.qrCode ||
+      data.payload        ||
+      null;
+
+    if (!pixCode) {
+      console.error('IXC /pix sem código:', text.slice(0, 500));
+      return res.status(502).json({
+        error: 'IXC não retornou código PIX',
+        detail: data.message || data.error || data.mensagem || null,
+      });
+    }
 
     return res.json({
-      pix_code: data.pix_copia_cola || data.brcode || data.pixCopiaECola || null,
-      expires_at: data.expiracao || null,
+      pix_code: pixCode,
+      expires_at: data.expiracao || data.data_expiracao || null,
     });
   } catch (err) {
     console.error('IXC /pix', err.message);

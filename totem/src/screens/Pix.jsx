@@ -12,6 +12,7 @@ function fmt(val) {
 export default function Pix({ session, go, goHome }) {
   const { activeDebt } = session;
   const [pixCode,   setPixCode]   = useState('');
+  const [pixError,  setPixError]  = useState('');
   const [secs,      setSecs]      = useState(TIMEOUT_SECS);
   const [paid,      setPaid]      = useState(false);
   const [loading,   setLoading]   = useState(true);
@@ -22,9 +23,11 @@ export default function Pix({ session, go, goHome }) {
     (async () => {
       try {
         const r = await api.generatePix(activeDebt.id);
-        setPixCode(r.pix_code || '');
+        if (r.pix_code) setPixCode(r.pix_code);
+        else setPixError(r.detail || 'IXC não retornou o código PIX. Procure o atendimento.');
       } catch (e) {
         console.error(e);
+        setPixError(e.message || 'Erro ao gerar PIX. Procure o atendimento.');
       } finally {
         setLoading(false);
       }
@@ -105,33 +108,37 @@ export default function Pix({ session, go, goHome }) {
         </div>
       </div>
 
-      <div style={{ display:'flex',justifyContent:'center',marginBottom:14 }}>
+      <div style={{ flex:1, display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', gap:12, minHeight:0 }}>
         {loading ? (
-          <div style={{ width:200,height:200,background:'#fff',borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',border:`1px solid ${C.cardBd}` }}>
-            <i className="ti ti-loader-2" style={{fontSize:42,color:C.blue,animation:'spin 1s linear infinite'}} aria-hidden="true"/>
+          <div style={{ width:240,height:240,background:'#fff',borderRadius:16,display:'flex',alignItems:'center',justifyContent:'center',border:`1px solid ${C.cardBd}` }}>
+            <i className="ti ti-loader-2" style={{fontSize:48,color:C.blue,animation:'spin 1s linear infinite'}} aria-hidden="true"/>
           </div>
         ) : pixCode ? (
-          <div style={{ background:'#fff',padding:14,borderRadius:14,border:`1px solid ${C.cardBd}`,boxShadow:'0 8px 24px rgba(13,91,168,0.10)' }}>
-            <QRCodeSVG value={pixCode} size={180} level="M"/>
-          </div>
+          <>
+            <div style={{ background:'#fff',padding:18,borderRadius:16,border:`1px solid ${C.cardBd}`,boxShadow:'0 10px 28px rgba(13,91,168,0.12)' }}>
+              <QRCodeSVG value={pixCode} size={240} level="M"/>
+            </div>
+            <p style={{ textAlign:'center',fontSize:14,color:C.dim,margin:0 }}>
+              Aponte o app do seu banco pro QR Code
+            </p>
+          </>
         ) : (
-          <div style={{ width:200,height:200,background:'#fff',borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',color:C.dim,fontSize:13,textAlign:'center',padding:18,border:`1px solid ${C.cardBd}` }}>
-            Aponte seu banco<br/>pra pagar
+          <div style={{ width:280,padding:'22px 18px',background:'rgba(204,71,71,0.06)',borderRadius:16,border:'1px solid rgba(204,71,71,0.30)',textAlign:'center' }}>
+            <i className="ti ti-alert-circle" style={{fontSize:36,color:C.red}} aria-hidden="true"/>
+            <div style={{ marginTop:10,fontSize:14,fontWeight:600,color:C.red,lineHeight:1.4 }}>
+              {pixError || 'Não foi possível gerar o PIX.'}
+            </div>
           </div>
         )}
       </div>
 
-      <p style={{ textAlign:'center',fontSize:13,color:C.dim,marginBottom:14 }}>
-        Aponte o app do seu banco pro QR Code acima
-      </p>
-
-      <div style={{ display:'flex',alignItems:'center',justifyContent:'center',gap:10,padding:'12px 16px',background:'#fff',border:`1px solid ${C.cardBd}`,borderRadius:12,marginBottom:'auto' }}>
+      <div style={{ display:'flex',alignItems:'center',justifyContent:'center',gap:10,padding:'12px 16px',background:'#fff',border:`1px solid ${C.cardBd}`,borderRadius:12,marginTop:14 }}>
         <i className="ti ti-clock" style={{fontSize:16,color:C.blue}} aria-hidden="true"/>
         <span style={{ fontSize:14,color:C.text }}>Aguardando pagamento</span>
         <span style={{ fontFamily:'monospace',fontSize:16,color:C.blue,fontWeight:700 }}>{mm}:{ss}</span>
       </div>
 
-      <button style={{ ...S.btnGhost,marginTop:18,borderColor:'rgba(204,71,71,0.30)',color:C.red }} onClick={goHome}>
+      <button style={{ ...S.btnGhost,marginTop:12,borderColor:'rgba(204,71,71,0.30)',color:C.red }} onClick={goHome}>
         Cancelar
       </button>
 
