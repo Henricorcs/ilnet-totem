@@ -4,8 +4,8 @@ import { C, S } from '../theme.js';
 import { ClientPill } from '../components/ClientIdentity.jsx';
 
 const API_URL = () => window.__API_URL__ || 'http://localhost:3001';
-const SH = 120;
-const IMG_SIZE = Math.round(SH * 0.7); // 84px fixo — não muda durante o giro
+const SH = 155;
+const IMG_SIZE = Math.round(SH * 0.7); // fixo — não muda durante o giro
 
 function resolveImg(image_url) {
   if (!image_url) return null;
@@ -262,7 +262,7 @@ export default function SlotMachine({ session, go, prizes }) {
             inset 0 -8px 18px rgba(0,0,0,0.4)
           `,
           width:'100%',
-          maxWidth: 380,
+          maxWidth: 520,
         }}>
           {/* Marquise topo */}
           <div style={{
@@ -285,7 +285,7 @@ export default function SlotMachine({ session, go, prizes }) {
 
           {/* Reels */}
           <div style={{
-            display:'flex',justifyContent:'center',gap:8,
+            display:'flex',justifyContent:'center',gap:10,
             padding:10,
             borderRadius:14,
             background:'linear-gradient(180deg,#04060f 0%,#071224 100%)',
