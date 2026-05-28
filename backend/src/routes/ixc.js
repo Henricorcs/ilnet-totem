@@ -154,8 +154,8 @@ function parseIXCDate(s) {
   return isNaN(dt.getTime()) ? null : dt;
 }
 
-// Débitos em aberto e VENCIDOS de um cliente (independente de contrato)
-router.get('/debts/:clientId', async (req, res) => {
+// Endpoint de debug: devolve a resposta crua do IXC fn_areceber por cliente
+router.get('/debts-raw/:clientId', async (req, res) => {
   try {
     const data = await listIXC('fn_areceber', {
       qtype: 'fn_areceber.id_cliente',
@@ -163,28 +163,55 @@ router.get('/debts/:clientId', async (req, res) => {
       rp: '100',
       sortname: 'fn_areceber.data_vencimento',
     });
+    return res.json({
+      total: data.total || (data.registros?.length || 0),
+      sample: data.registros?.[0] || null,
+      registros: data.registros || [],
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
 
-    if (!data.registros) {
-      console.log(`IXC /debts cliente=${req.params.clientId}: registros=null total=${data.total||0}`);
+// Débitos em aberto e VENCIDOS — consulta o ID tanto como cliente quanto
+// como contrato pra tolerar mismatch entre versão do totem e do backend.
+router.get('/debts/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const [byClient, byContract] = await Promise.all([
+      listIXC('fn_areceber', {
+        qtype: 'fn_areceber.id_cliente',
+        query: id, rp: '100', sortname: 'fn_areceber.data_vencimento',
+      }).catch(() => ({ registros: [] })),
+      listIXC('fn_areceber', {
+        qtype: 'fn_areceber.id_contrato',
+        query: id, rp: '100', sortname: 'fn_areceber.data_vencimento',
+      }).catch(() => ({ registros: [] })),
+    ]);
+
+    const merged = new Map();
+    for (const r of (byClient.registros || []))   merged.set(r.id, r);
+    for (const r of (byContract.registros || [])) merged.set(r.id, r);
+    const registros = [...merged.values()];
+
+    if (registros.length === 0) {
+      console.log(`IXC /debts id=${id}: nada por cliente (${byClient.registros?.length||0}) nem por contrato (${byContract.registros?.length||0})`);
       return res.json({ debts: [] });
     }
 
+    console.log(`IXC /debts id=${id} amostra=`, JSON.stringify(registros[0]).slice(0, 600));
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
-    const total = data.registros.length;
-    if (total > 0) {
-      console.log(`IXC /debts cliente=${req.params.clientId} registro[0]=`, JSON.stringify(data.registros[0]).slice(0, 800));
-    }
     let excludedByStatus = 0, excludedByLiberado = 0, excludedByDate = 0;
 
-    const debts = data.registros
+    const debts = registros
       .filter(d => {
         if (['C', 'R', 'CA'].includes(d.status)) { excludedByStatus++; return false; }
         return true;
       })
       .filter(d => {
-        // Permissivo: só descarta se liberado for explicitamente 'N'
         if (d.liberado === 'N') { excludedByLiberado++; return false; }
         return true;
       })
@@ -204,7 +231,7 @@ router.get('/debts/:clientId', async (req, res) => {
         };
       });
 
-    console.log(`IXC /debts cliente=${req.params.clientId}: total=${total} status_excl=${excludedByStatus} liberado_excl=${excludedByLiberado} nao_vencidas=${excludedByDate} retornadas=${debts.length}`);
+    console.log(`IXC /debts id=${id}: total=${registros.length} status_excl=${excludedByStatus} liberado_excl=${excludedByLiberado} nao_vencidas=${excludedByDate} retornadas=${debts.length}`);
 
     return res.json({ debts });
   } catch (err) {
