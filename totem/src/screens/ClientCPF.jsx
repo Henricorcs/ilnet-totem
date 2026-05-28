@@ -81,14 +81,8 @@ export default function ClientCPF({ go }) {
         <span style={S.stepLabel}>PASSO 2 DE 4</span>
       </div>
 
-      <div style={{ textAlign:'center', marginTop:24, marginBottom:14 }}>
-        <div style={{
-          width:64, height:64, margin:'0 auto 12px', borderRadius:'50%',
-          background:'rgba(30,124,216,0.10)', border:`1px solid ${C.cardBd}`,
-          display:'flex', alignItems:'center', justifyContent:'center',
-        }}>
-          <i className="ti ti-id" style={{ fontSize:32, color:C.blue }}/>
-        </div>
+      <div style={{ textAlign:'center', marginTop:16, marginBottom:14 }}>
+        <img src="/assets/logo_ilnet.svg" alt="ILNET" style={{ height:44, marginBottom:14, objectFit:'contain' }}/>
         <h2 style={{ fontSize:24, fontWeight:700, color:C.text }}>Digite seu CPF</h2>
         <p style={{ fontSize:14, color:C.dim, marginTop:6 }}>Pra identificarmos sua conta na ILNET</p>
       </div>

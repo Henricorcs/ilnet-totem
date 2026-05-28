@@ -60,7 +60,7 @@ export default function Keyboard({
 
   if (layout === 'numeric') {
     return (
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:10, width:'100%' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:12, width:'100%' }}>
         {LAYOUTS.numeric.flat().map((k, i) => {
           if (!k) return <div key={i}/>;
           const isBack = k === '←';
@@ -94,7 +94,7 @@ export default function Keyboard({
   const rows = LAYOUTS.qwerty;
 
   return (
-    <div style={{ display:'flex', flexDirection:'column', gap:6, width:'100%' }}>
+    <div style={{ display:'flex', flexDirection:'column', gap:8, width:'100%' }}>
       {allowDigits && (
         <div style={{ display:'flex', gap:6, justifyContent:'center' }}>
           {'0123456789'.split('').map(d => (
@@ -104,7 +104,7 @@ export default function Keyboard({
       )}
       {rows.map((row, idx) => (
         <div key={idx} style={{
-          display:'flex', gap:6, justifyContent:'center',
+          display:'flex', gap:8, justifyContent:'center',
           paddingLeft: idx === 1 ? 16 : idx === 2 ? 32 : 0,
           paddingRight: idx === 1 ? 16 : idx === 2 ? 32 : 0,
         }}>
@@ -125,7 +125,7 @@ export default function Keyboard({
           )}
         </div>
       ))}
-      <div style={{ display:'flex', gap:6, justifyContent:'center', marginTop:2 }}>
+      <div style={{ display:'flex', gap:8, justifyContent:'center', marginTop:2 }}>
         <button onClick={space} style={{ ...keyStyle({ kind:'space' }), flex: 4 }}>espaço</button>
         {onSubmit && (
           <button
@@ -146,8 +146,8 @@ function keyStyle({ kind, disabled, small }) {
     background: '#ffffff',
     color: C.text,
     border: `1px solid ${C.cardBd}`,
-    borderRadius: 10,
-    fontSize: small ? 18 : 22,
+    borderRadius: 12,
+    fontSize: small ? 20 : 26,
     fontWeight: 600,
     cursor: disabled ? 'not-allowed' : 'pointer',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -155,8 +155,8 @@ function keyStyle({ kind, disabled, small }) {
     boxShadow: '0 2px 0 rgba(13,91,168,0.10), 0 4px 10px rgba(13,91,168,0.06)',
     transition: 'transform .05s, background .15s',
     userSelect: 'none',
-    minHeight: small ? 48 : 56,
-    minWidth: small ? 40 : 44,
+    minHeight: small ? 54 : 68,
+    minWidth: small ? 44 : 54,
     flex: 1,
   };
 

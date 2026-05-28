@@ -84,8 +84,13 @@ export default function VisitorForm({ go }) {
         <span style={S.stepLabel}>ETAPA {step + 1} DE {TOTAL}</span>
       </div>
 
+      {/* Logo */}
+      <div style={{ textAlign:'center', marginTop:10 }}>
+        <img src="/assets/logo_ilnet.svg" alt="ILNET" style={{ height:40, objectFit:'contain' }}/>
+      </div>
+
       {/* Progress bar */}
-      <div style={{ display:'flex', gap:6, marginTop:14, marginBottom:18 }}>
+      <div style={{ display:'flex', gap:6, marginTop:12, marginBottom:18 }}>
         {STEPS.map((_, i) => (
           <div key={i} style={{
             flex:1, height:6, borderRadius:3,

@@ -55,7 +55,7 @@ export default function Won({ session, goHome }) {
 
       <div style={{ textAlign:'center',zIndex:2,marginBottom:20,animation:'bounce 2s ease-in-out infinite' }}>
         <div style={{
-          width:180,height:180,margin:'0 auto',borderRadius:'50%',
+          width:260,height:260,margin:'0 auto',borderRadius:'50%',
           background:'radial-gradient(circle, rgba(91,197,245,0.25), rgba(30,124,216,0.06))',
           border:`3px solid rgba(30,124,216,0.55)`,
           display:'flex',alignItems:'center',justifyContent:'center',
@@ -63,12 +63,12 @@ export default function Won({ session, goHome }) {
         }}>
           {prize?.image_url ? (
             <img src={API_URL() + prize.image_url} alt={prize.name}
-              style={{ width:120,height:120,objectFit:'contain' }}/>
+              style={{ width:190,height:190,objectFit:'contain' }}/>
           ) : (
-            <i className="ti ti-gift" style={{fontSize:80,color:C.blue}} aria-hidden="true"/>
+            <i className="ti ti-gift" style={{fontSize:110,color:C.blue}} aria-hidden="true"/>
           )}
         </div>
-        <div style={{ fontSize:24,fontWeight:800,marginTop:16,color:C.text }}>
+        <div style={{ fontSize:28,fontWeight:800,marginTop:16,color:C.text }}>
           {prize?.name || 'Prêmio'}
         </div>
       </div>
