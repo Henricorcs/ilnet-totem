@@ -37,8 +37,7 @@ export default function ClientCPF({ go }) {
 
       const cRes = await api.getContracts(client.id);
       const allContracts = cRes.contracts || [];
-      const ACTIVE_STATUS = new Set(['A','B','FA']);
-      const contracts = allContracts.filter(c => ACTIVE_STATUS.has(c.status));
+      const contracts = allContracts.filter(c => c.status === 'A');
 
       if (contracts.length === 0) {
         return setError('Nenhum contrato ativo encontrado. Volte e cadastre-se como visitante.');

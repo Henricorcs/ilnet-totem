@@ -52,7 +52,7 @@ export default function ContractSelect({ session, go }) {
         flex:'1 1 auto',minHeight:0,overflowY:'auto',paddingRight:2,
       }}>
         {contracts.map(c => {
-          const st = STATUS_MAP[c.status] || { label: c.status, color: C.dim };
+          const st = STATUS_MAP[c.statusInternet] || STATUS_MAP[c.status] || { label: c.statusInternet || c.status, color: C.dim };
           const address = c.address || 'Endereço não informado';
           const isCommercial = address.toLowerCase().includes('av.') || address.toLowerCase().includes('avenida');
           return (

@@ -121,12 +121,13 @@ router.get('/contracts/:clientId', async (req, res) => {
     if (!data.registros) return res.json({ contracts: [] });
 
     const contracts = data.registros.map(c => ({
-      id:     c.id,
-      address: [c.endereco, c.numero, c.complemento, c.bairro]
+      id:            c.id,
+      address:       [c.endereco, c.numero, c.complemento, c.bairro]
         .filter(Boolean).join(', '),
-      city:   c.cidade || '',
-      status: c.status_internet,
-      plan:   c.descricao_plano || '',
+      city:          c.cidade || '',
+      status:        c.status,           // status do contrato: A/I/C
+      statusInternet: c.status_internet, // status de acesso: A/B/FA
+      plan:          c.descricao_plano || '',
     }));
 
     return res.json({ contracts });
