@@ -123,34 +123,34 @@ export default function Attract({ go, event, prizes = [] }) {
       <div style={{ zIndex:2, width:'100%', display:'flex', flexDirection:'column', alignItems:'center', gap:12 }}>
         {featured ? (
           <div key={featured.id} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{
-            display:'flex',alignItems:'center',gap:16,
-            padding:'14px 20px',
+            display:'flex',alignItems:'center',gap:20,
+            padding:'20px 26px',
             background:'#fff',
             border:'1.5px solid rgba(199,134,26,0.45)',
-            borderRadius:20,
+            borderRadius:24,
             boxShadow:'0 14px 36px rgba(199,134,26,0.18), 0 0 0 1px rgba(199,134,26,0.10) inset',
             animation:'prizeIn .6s ease-out',
-            maxWidth: 340,
+            maxWidth: 420,
             width:'100%',
           }}>
             <div style={{
-              width:64,height:64,borderRadius:16,
+              width:96,height:96,borderRadius:20,
               background:'rgba(199,134,26,0.12)',
               display:'flex',alignItems:'center',justifyContent:'center',
               flexShrink:0,
               border:'1px solid rgba(199,134,26,0.30)',
             }}>
               {featured.image_url
-                ? <img src={API_URL() + featured.image_url} alt={featured.name} style={{ width:48,height:48,objectFit:'contain' }}/>
-                : <i className="ti ti-gift" style={{ fontSize:32, color:C.gold }} aria-hidden="true"/>}
+                ? <img src={API_URL() + featured.image_url} alt={featured.name} style={{ width:74,height:74,objectFit:'contain' }}/>
+                : <i className="ti ti-gift" style={{ fontSize:48, color:C.gold }} aria-hidden="true"/>}
             </div>
             <div style={{ textAlign:'left',flex:1,minWidth:0 }}>
-              <div style={{ fontSize:11,letterSpacing:'2px',color:C.gold,marginBottom:3,fontWeight:700 }}>PRÊMIO EM JOGO</div>
-              <div style={{ fontSize:17,fontWeight:700,color:C.text,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>
+              <div style={{ fontSize:12,letterSpacing:'2px',color:C.gold,marginBottom:5,fontWeight:700 }}>PRÊMIO EM JOGO</div>
+              <div style={{ fontSize:22,fontWeight:800,color:C.text,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap' }}>
                 {featured.name}
               </div>
             </div>
-            <i className="ti ti-sparkles" style={{ fontSize:26,color:C.gold }} aria-hidden="true"/>
+            <i className="ti ti-sparkles" style={{ fontSize:32,color:C.gold }} aria-hidden="true"/>
           </div>
         ) : (
           <div style={{ fontSize:15,color:C.dim,lineHeight:1.5,padding:'0 12px',textAlign:'center' }}>
